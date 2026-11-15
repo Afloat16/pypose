@@ -1,0 +1,82 @@
+name: Validate similarity matrix scale range
+on:
+  push:
+    branches: [validation/similarity-scale-range-20261115]
+permissions:
+  contents: read
+jobs:
+  native-pytorch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 83ae936769dff7b81bd9a764690ce5f437a216c8
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install native CPU PyTorch and test dependencies
+        run: |
+          python -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install pytest==8.4.2 numpy==2.2.6 packaging==25.0
+      - name: Verify source and record environment
+        run: |
+          test "$(git rev-parse HEAD)" = "83ae936769dff7b81bd9a764690ce5f437a216c8"
+          mkdir -p validation-results
+          git diff --check 298e9f0862cb228b0e8851b2616e682ccdca6a32 HEAD
+          python -m compileall -q pypose/lietensor/convert.py tests/lietensor/test_similarity_scale_range.py
+          python -m pip freeze > validation-results/environment.txt
+          git diff 298e9f0862cb228b0e8851b2616e682ccdca6a32 HEAD > validation-results/source.patch
+      - name: Require original implementation to fail the regressions
+        run: |
+          python - <<'PY'
+          import pathlib
+          import subprocess
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path = "pypose/lietensor/convert.py"
+          original = subprocess.check_output(["git", "show", "298e9f0862cb228b0e8851b2616e682ccdca6a32:" + path])
+          pathlib.Path(path).write_bytes(original)
+          try:
+              result = subprocess.run([
+                  sys.executable, "-m", "pytest", "-q",
+                  "tests/lietensor/test_similarity_scale_range.py",
+                  "--junitxml=validation-results/original.xml",
+              ])
+          finally:
+              subprocess.run(["git", "restore", "--source=83ae936769dff7b81bd9a764690ce5f437a216c8", "--", path], check=True)
+          root = ET.parse("validation-results/original.xml").getroot()
+          cases = root.findall(".//testcase")
+          failures = [case.attrib["name"] for case in cases if case.find("failure") is not None]
+          assert result.returncode == 1, result.returncode
+          assert not root.findall(".//error")
+          assert any("determinant_overflow" in name for name in failures), failures
+          assert any("large_scale_gradient" in name for name in failures), failures
+          print("Original regression failures:", len(failures), "of", len(cases))
+          PY
+      - name: Run the complete test suite on the exact patched source
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import pytest
+          import torch
+
+          random.seed(0)
+          np.random.seed(0)
+          torch.manual_seed(0)
+          print("Native torch:", torch.__version__, "CUDA available:", torch.cuda.is_available())
+          raise SystemExit(pytest.main(["-q", "--junitxml=validation-results/patched-full.xml"]))
+          PY
+      - name: Verify validation did not alter production files
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: similarity-scale-range-validation
+          path: validation-results/
