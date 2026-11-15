@@ -1,0 +1,215 @@
+{
+  "repository": "pypose/pypose",
+  "audited_at_utc": "2026-11-15 04:23:03 UTC",
+  "base_sha": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "scope": "Re-audit of three posted contributions and the fourth bmv candidate before posting its PR.",
+  "method": {
+    "enumeration": "REST /repos/pypose/pypose/pulls?state=all&per_page=100, all four pages. Independently reconciled original REST is:pr search history: 309 original PRs exactly, plus this campaign's #478/#480/#482. No issue-only wrapper.",
+    "counts": {
+      "total": 312,
+      "open": 36,
+      "closed_unmerged": 48,
+      "merged": 228,
+      "prior_prs_indexed": 309
+    },
+    "files": "Every prior PR's /files pages retrieved to completion or the documented 3000-file GitHub limit. Relevant current and renamed paths were inspected at function level. The two capped PRs are explicitly handled below.",
+    "api_cap_exceptions": [
+      {
+        "number": 91,
+        "actual_changed_files": 3561,
+        "retrieved_file_limit": 3000,
+        "head_inspection": {
+          "sha": "72466ffb5caf8a00ea9e7ea13cc96e50ea37bc9f",
+          "tree_sha": "471fef9647ef744a5457548540b213de28088eae",
+          "tree_truncated": false,
+          "found": [
+            "pypose/lietensor/convert.py"
+          ],
+          "absent": [
+            "pypose/optim/corrector.py",
+            "pypose/module/pf.py",
+            "pypose/function/linalg.py"
+          ]
+        },
+        "result": "Complete recursive head tree was not truncated; among the four target paths only convert.py exists. Retrieved its exact head content: both conversions still compute pow(det(...), 1/3). The three other target files are absent."
+      },
+      {
+        "number": 92,
+        "actual_changed_files": 3561,
+        "retrieved_file_limit": 3000,
+        "head_inspection": {
+          "sha": "6386b37501f3bb7595a82ac6ceb56941e2b56cf9",
+          "tree_sha": "b714582cd8842213670035f953bf0b33f6236ce0",
+          "tree_truncated": false,
+          "found": [
+            "pypose/lietensor/convert.py"
+          ],
+          "absent": [
+            "pypose/optim/corrector.py",
+            "pypose/module/pf.py",
+            "pypose/function/linalg.py"
+          ]
+        },
+        "result": "Complete recursive head tree was not truncated; among the four target paths only convert.py exists. Retrieved its exact head content: both conversions still compute pow(det(...), 1/3). The three other target files are absent."
+      }
+    ],
+    "old_fork_heads": [
+      {
+        "name": "Afloat16/fix-cg-batch-convergence",
+        "sha": "2001745eeb92bb2b4eb600d8dfc626df5ecb6156"
+      },
+      {
+        "name": "Afloat16/fix-cholesky-failure-status",
+        "sha": "c8564398c12afc44bdab1bb0d75a6420de128d90"
+      },
+      {
+        "name": "Afloat16/fix-ekf-joseph-covariance",
+        "sha": "5388794587ce7ecfcc1e29fe50c06d606b721c7b"
+      },
+      {
+        "name": "Afloat16/fix-epnp-input-batches",
+        "sha": "e6abb09e2a55a67539c1505c71a2368b47359f18"
+      },
+      {
+        "name": "Afloat16/fix-icp-initial-transform-batches",
+        "sha": "4bd8c8143206a694d72199dc35fb099c46e26bdb"
+      },
+      {
+        "name": "Afloat16/fix-lm-current-objective",
+        "sha": "3d6a6fbc256b753b40b51b9267cd0e657f2935b6"
+      },
+      {
+        "name": "Afloat16/fix-lqr-module-conversions",
+        "sha": "ea3d364610b3aa4df580c2cb40e2e639b0fa88e6"
+      },
+      {
+        "name": "Afloat16/fix-mpc-independent-best-trajectories",
+        "sha": "22d6273838e21daaca6797f4e526ecacf04ce757"
+      },
+      {
+        "name": "Afloat16/fix-so3-right-jacobian-identity",
+        "sha": "9330eb1ed544d118f723dd26c55318e778a80f6b"
+      },
+      {
+        "name": "Afloat16/fix-triggs-zero-second-derivatives",
+        "sha": "84477616812d86b33990d71105c987fe428f6dfe"
+      },
+      {
+        "name": "Afloat16/prefix-scan-length-20261027",
+        "sha": "771ccf02915678cf49fc9a89f80eeb521b907f9d"
+      },
+      {
+        "name": "fix/scheduler-checkpoint-bindings",
+        "sha": "4c81e258f377e2f136141bd7c7f732d0bd95e1fc"
+      },
+      {
+        "name": "fix/svdtf-reflection-optimum-20261020",
+        "sha": "29b1a58f2bb1fe5037762c922a29ca332e1b926e"
+      },
+      {
+        "name": "fix-cauchy-small-residual-costs",
+        "sha": "169bebd667cb84dc5ef5e9c67df86cdc1c0b284b"
+      },
+      {
+        "name": "fix-g2o-vertex-row-mapping",
+        "sha": "a91fd44ceda26bbd7a43e2f77b8ca579616c0b7e"
+      },
+      {
+        "name": "fix-knn-radius-indices-20261029",
+        "sha": "b8d364a652f69fa220a1af186a7a7921e72ae2db"
+      },
+      {
+        "name": "fix-pixel2point-camera-axis",
+        "sha": "5e52ed6d91356326e02a57821c0d21a4b103dec9"
+      },
+      {
+        "name": "fix-reprojection-l1-reduction-20261029",
+        "sha": "582412fb982cc5826307da895ff1ccb331a26905"
+      },
+      {
+        "name": "fix-tolerant-softplus-overflow",
+        "sha": "906b62dc2857eff862d78849a2f5e9888513bc44"
+      },
+      {
+        "name": "fix-voxel-singleton-shape-20261029",
+        "sha": "fa9242dd11b29e4230a490580b4438753acbb2bd"
+      },
+      {
+        "name": "main",
+        "sha": "afedf8a61927825bb9835e238217dfc36c80cc0e"
+      }
+    ],
+    "limitations": "No equivalent fix found in retrieved public history; not a claim about deleted/private branches or future submissions. GitHub /files cap does not permit claiming all 3561 files of #91/#92 were enumerated by that endpoint."
+  },
+  "result": "No equivalent duplicate found in the three posted items or bmv candidate.",
+  "items": [
+    {
+      "number": 1,
+      "path": "pypose/optim/corrector.py",
+      "source_sha": "b60736c702fbab657c761c549885089e89c1e3bb",
+      "upstream_pr": 478,
+      "prior_prs_touching_path": [
+        88,
+        94,
+        382,
+        468
+      ],
+      "decision": "Triggs positive curvature: #88/#94 introduced the same missing R[M] factor. #382 changes FastTriggs gradient context; #468 only handles absent/zero second derivatives. Neither fixes residual scaling. All 21 original fork corrector files retain the missing factor."
+    },
+    {
+      "number": 2,
+      "path": "pypose/lietensor/convert.py",
+      "source_sha": "83ae936769dff7b81bd9a764690ce5f437a216c8",
+      "upstream_pr": 480,
+      "prior_prs_touching_path": [
+        10,
+        57,
+        62,
+        64,
+        77,
+        79,
+        81,
+        84,
+        163,
+        200,
+        218,
+        304,
+        316,
+        333,
+        353
+      ],
+      "decision": "Similarity scale range: conversion history #57/#77 introduces determinant-then-cube-root; #304 extracts the rotation block before its determinant, without logarithmic scale recovery. All original fork convert.py files match the unfixed formula. Both Sim3 and RxSO3 are one shared-root improvement."
+    },
+    {
+      "number": 3,
+      "path": "pypose/module/pf.py",
+      "source_sha": "e2fca95189764b2a489f770f43c83761a78b3af7",
+      "upstream_pr": 482,
+      "prior_prs_touching_path": [
+        182,
+        200,
+        218,
+        352
+      ],
+      "decision": "PF prior covariance: #182/#218 introduce n*P; #352 corrects batching axes but retains n*P. Earlier unmerged #170 uses a different PF/Kalman-like proposal sampled from process covariance Q, not a correction from n*P to the public prior covariance P. All original fork PF files retain n*P."
+    },
+    {
+      "number": 4,
+      "path": "pypose/function/linalg.py",
+      "source_sha": "2d452d2de76bd6b8fed39e7e92a73ce84232878a",
+      "upstream_pr": null,
+      "prior_prs_touching_path": [
+        184,
+        218,
+        249,
+        325,
+        369
+      ],
+      "decision": "bmv out buffer: #218 introduced direct vector out forwarding to a matrix result. Open #369 clones input operands and removes an in-place squeeze but still passes the unexpanded out to matmul, so it still resizes a strided output. All 21 original fork linalg files retain the same out behavior."
+    }
+  ],
+  "discarded_candidate": {
+    "description": "System time-counter autograd fix",
+    "reason": "Existing open #369 already changes the in-place clock update; candidate discarded before posting."
+  }
+}
