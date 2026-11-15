@@ -1,0 +1,22 @@
+name: Investigate PF prior covariance
+on:
+  push:
+    branches: [validation/pf-prior-investigation-20261115]
+permissions:
+  contents: read
+jobs:
+  reproduce:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: |
+          python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install packaging==25.0
+      - name: Run actual public PF against analytic references
+        env:
+          PYTHONPATH: .
+        run: python validation/pf_prior_probe.py
