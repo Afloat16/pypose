@@ -1,0 +1,82 @@
+name: Validate positive-curvature Triggs residuals
+on:
+  push:
+    branches: [validation/triggs-positive-curvature-20261115]
+permissions:
+  contents: read
+jobs:
+  native-pytorch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: b60736c702fbab657c761c549885089e89c1e3bb
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install native CPU PyTorch and test dependencies
+        run: |
+          python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install pytest==8.4.2 numpy==2.2.6 packaging==25.0
+      - name: Verify source and record environment
+        run: |
+          test "$(git rev-parse HEAD)" = "b60736c702fbab657c761c549885089e89c1e3bb"
+          mkdir -p validation-results
+          git diff --check 298e9f0862cb228b0e8851b2616e682ccdca6a32 HEAD
+          python -m compileall -q pypose/optim/corrector.py tests/optim/test_triggs_positive_curvature.py
+          python -m pip freeze > validation-results/environment.txt
+          git diff 298e9f0862cb228b0e8851b2616e682ccdca6a32 HEAD > validation-results/source.patch
+      - name: Require original implementation to fail the regressions
+        run: |
+          python - <<'PY'
+          import pathlib
+          import subprocess
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path = "pypose/optim/corrector.py"
+          original = subprocess.check_output(["git", "show", "298e9f0862cb228b0e8851b2616e682ccdca6a32:" + path])
+          pathlib.Path(path).write_bytes(original)
+          try:
+              result = subprocess.run([
+                  sys.executable, "-m", "pytest", "-q",
+                  "tests/optim/test_triggs_positive_curvature.py",
+                  "--junitxml=validation-results/original.xml",
+              ])
+          finally:
+              subprocess.run(["git", "restore", "--source=b60736c702fbab657c761c549885089e89c1e3bb", "--", path], check=True)
+          root = ET.parse("validation-results/original.xml").getroot()
+          cases = root.findall(".//testcase")
+          failures = [case.attrib["name"] for case in cases if case.find("failure") is not None]
+          assert result.returncode == 1, result.returncode
+          assert not root.findall(".//error")
+          assert any("normal_equations" in name for name in failures), failures
+          assert any("gauss_newton" in name for name in failures), failures
+          print("Original regression failures:", len(failures), "of", len(cases))
+          PY
+      - name: Run the complete test suite on the exact patched source
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import pytest
+          import torch
+
+          random.seed(0)
+          np.random.seed(0)
+          torch.manual_seed(0)
+          print("Native torch:", torch.__version__, "CUDA available:", torch.cuda.is_available())
+          raise SystemExit(pytest.main(["-q", "--junitxml=validation-results/patched-full.xml"]))
+          PY
+      - name: Verify validation did not alter production files
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: triggs-positive-curvature-validation
+          path: validation-results/
