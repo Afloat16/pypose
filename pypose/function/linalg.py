@@ -58,7 +58,13 @@ def bmv(mat, vec, *, out=None):
     assert mat.shape[-1] == vec.shape[-1], 'matrix-vector shape invalid'
     mat = mat.tensor() if isinstance(mat, LieTensor) else mat
     vec = vec.tensor() if isinstance(vec, LieTensor) else vec
-    return torch.matmul(mat, vec.unsqueeze(-1), out=out).squeeze_(-1)
+    out_mat = out.unsqueeze(-1) if out is not None else None
+    result = torch.matmul(mat, vec.unsqueeze(-1), out=out_mat).squeeze_(-1)
+    if out is not None:
+        if out.shape != result.shape:
+            out.resize_(result.shape)
+        return out
+    return result
 
 
 def bvmv(lvec, mat, rvec):
