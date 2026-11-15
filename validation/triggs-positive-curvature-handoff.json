@@ -1,0 +1,78 @@
+{
+  "repository": "pypose/pypose",
+  "number": 1,
+  "title": "Preserve residual values in positive-curvature Triggs correction",
+  "base_sha": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "source_sha": "b60736c702fbab657c761c549885089e89c1e3bb",
+  "source_branch": "Afloat16/fix-triggs-positive-curvature-residuals",
+  "source_url": "https://github.com/Afloat16/pypose/tree/Afloat16/fix-triggs-positive-curvature-residuals",
+  "compare_url": "https://github.com/pypose/pypose/compare/main...Afloat16:pypose:Afloat16/fix-triggs-positive-curvature-residuals",
+  "files": [
+    "pypose/optim/corrector.py",
+    "tests/optim/test_triggs_positive_curvature.py"
+  ],
+  "author": "Afloat16",
+  "production_diff": "sR[M] = se[M] / (1 - alpha) * R[M]",
+  "validation": {
+    "run_url": "https://github.com/Afloat16/pypose/actions/runs/43674059967",
+    "run_id": 43674059967,
+    "workflow_branch": "validation/triggs-positive-curvature-20261115",
+    "workflow_sha": "aeef69aed44a51503b7799ace765b78cf3271d85",
+    "result": "success",
+    "baseline": "10 failed, 2 passed",
+    "fixed": "412 passed, 18 skipped, 9 warnings",
+    "regression_cases": 12,
+    "environment": "Python 3.12.16, PyTorch 2.8.0+cpu, torchvision 0.23.0+cpu, pytest 8.4.2, numpy 2.2.6",
+    "limitations": [
+      "CPU only; CUDA-dependent tests skipped.",
+      "An initial workflow attempt omitted torchvision and failed full-suite collection. The final successful run installs the upstream dependency and validates the unchanged production SHA."
+    ],
+    "artifact": {
+      "id": 14145368802,
+      "name": "triggs-positive-curvature-validation",
+      "size_in_bytes": 8305,
+      "url": "https://api.github.com/repos/Afloat16/pypose/actions/artifacts/14145368802",
+      "archive_download_url": "https://api.github.com/repos/Afloat16/pypose/actions/artifacts/14145368802/zip",
+      "expired": false,
+      "created_at": "2026-11-15T03:50:22Z",
+      "expires_at": "2027-02-13T03:49:24Z",
+      "updated_at": "2026-11-15T03:50:22Z",
+      "digest": "sha256:ef159b5dc0fc6a05a91dba4ad30f6bfad637d52c28ac851ea549e98fa6866f3b",
+      "workflow_run": {
+        "id": 43674059967,
+        "repository_id": 1408259171,
+        "head_repository_id": 1408259171,
+        "head_branch": "validation/triggs-positive-curvature-20261115",
+        "head_sha": "aeef69aed44a51503b7799ace765b78cf3271d85"
+      }
+    }
+  },
+  "novelty": {
+    "all_state_prs": 309,
+    "all_state_issues": 160,
+    "user_prs": 20,
+    "old_fork_branches": 21,
+    "old_branch_check": "All 21 corrector.py files retain the missing residual factor.",
+    "relevant_history": [
+      468,
+      239,
+      268,
+      135,
+      134,
+      132
+    ],
+    "distinction": "#468 only computes a missing zero second derivative. This fixes a downstream positive-curvature residual formula."
+  },
+  "policy": {
+    "guidance": "CONTRIBUTING.md recommends issue discussion before coding and full pytest; no numeric concurrent-PR limit or mandatory attribution/AI disclosure found. No AGENTS.md or PR template.",
+    "publication": "Upstream issue/PR creation unavailable (known 403; browser runtime also unavailable). Complete issue-first prefill and PR prefill below.",
+    "upstream_created": false,
+    "merged": false
+  },
+  "issue_title": "Triggs drops residual values for positive-curvature kernels",
+  "issue_body": "## Bug\n\nThe positive-second-derivative branch of `Triggs.forward` replaces the corrected residual with its scale factor:\n\n```python\nsR[M] = se[M] / (1 - alpha)\n```\n\nThe documented formula requires multiplying this factor by `R[M]`. Without that multiplication, residual magnitudes and signs are discarded, and the corrected normal-equation gradient can point in the wrong direction.\n\n## Reproducer\n\nOn main `298e9f0862cb228b0e8851b2616e682ccdca6a32`, with Python 3.12 and native PyTorch 2.8.0+cpu:\n\n```python\nimport torch\nimport pypose as pp\nfrom torch import nn\n\nclass SquaredCost(nn.Module):\n    def forward(self, x):\n        return x.square()\n\nclass Model(nn.Module):\n    def __init__(self):\n        super().__init__()\n        self.value = nn.Parameter(torch.tensor([0.], dtype=torch.float64))\n\n    def forward(self, target):\n        error = self.value - target\n        return torch.stack((error, 2 * error), dim=-1)\n\nmodel = Model()\nkernel = SquaredCost()\noptimizer = pp.optim.GN(\n    model, kernel=kernel, corrector=pp.optim.corrector.Triggs(kernel))\noptimizer.step(torch.tensor(2., dtype=torch.float64))\ntorch.testing.assert_close(\n    model.value, torch.tensor([2 / 3], dtype=torch.float64))\n```\n\nThe cost is `25 * (value - 2)**4`, so the robust Gauss-Newton step removes one third of the initial error. The assertion fails on main and passes after retaining the original residual factor.\n\n## Proposed correction and validation\n\nMultiply the positive-curvature corrected residual by `R[M]`, matching the existing formula. The Jacobian correction and the zero-residual/nonpositive-curvature paths keep their current behavior.\n\nThe independent regression suite compares corrected normal equations with autograd gradients and Hessians, covers multiple batch shapes and float32/float64, and runs four real GN iterations from each residual sign.\n\nOriginal: 10 failed, 2 passed. Patched full suite: 412 passed, 18 skipped, 9 warnings. CUDA-dependent cases were not executed on the CPU runner.\n\nValidation: https://github.com/Afloat16/pypose/actions/runs/43674059967\n\nThis is separate from #468, which handles computing an exactly zero second derivative; this failure occurs after differentiation when the second derivative is positive.\n\nI intend to contribute the correction and regression tests.",
+  "pr_title": "Preserve residual values in positive-curvature Triggs correction",
+  "pr_body": "## Why\n\nFor a kernel with positive second derivative, `Triggs.forward` currently overwrites the residual with a scale factor. This discards its sign and magnitude, violates the documented normal-equation gradient, and can move a real Gauss-Newton optimizer away from its target.\n\n## Changes\n\nMultiply the positive-curvature scale by the original residual. Add independent gradient/Hessian references across batch shapes and dtypes, controls for zero residuals and the negative-curvature fallback, and a real GN training regression from both sides of the target.\n\nThe production change is one line. This is independent of #468's zero-second-derivative handling.\n\n## Validation\n\n- Original source: 10 regression failures and 2 passing controls.\n- Patched exact source `b60736c702fbab657c761c549885089e89c1e3bb`: complete pytest suite, 412 passed, 18 skipped, 9 warnings.\n- Python 3.12, native PyTorch 2.8.0+cpu; CUDA was unavailable.\n- Compilation and `git diff --check` passed.\n- CI: https://github.com/Afloat16/pypose/actions/runs/43674059967\n\nThe separate fork validation branch contains the workflow; this PR contains only the correction and tests.",
+  "issue_prefill": "https://github.com/pypose/pypose/issues/new?title=Triggs%20drops%20residual%20values%20for%20positive-curvature%20kernels&body=%23%23%20Bug%0A%0AThe%20positive-second-derivative%20branch%20of%20%60Triggs.forward%60%20replaces%20the%20corrected%20residual%20with%20its%20scale%20factor%3A%0A%0A%60%60%60python%0AsR%5BM%5D%20%3D%20se%5BM%5D%20%2F%20(1%20-%20alpha)%0A%60%60%60%0A%0AThe%20documented%20formula%20requires%20multiplying%20this%20factor%20by%20%60R%5BM%5D%60.%20Without%20that%20multiplication%2C%20residual%20magnitudes%20and%20signs%20are%20discarded%2C%20and%20the%20corrected%20normal-equation%20gradient%20can%20point%20in%20the%20wrong%20direction.%0A%0A%23%23%20Reproducer%0A%0AOn%20main%20%60298e9f0862cb228b0e8851b2616e682ccdca6a32%60%2C%20with%20Python%203.12%20and%20native%20PyTorch%202.8.0%2Bcpu%3A%0A%0A%60%60%60python%0Aimport%20torch%0Aimport%20pypose%20as%20pp%0Afrom%20torch%20import%20nn%0A%0Aclass%20SquaredCost(nn.Module)%3A%0A%20%20%20%20def%20forward(self%2C%20x)%3A%0A%20%20%20%20%20%20%20%20return%20x.square()%0A%0Aclass%20Model(nn.Module)%3A%0A%20%20%20%20def%20__init__(self)%3A%0A%20%20%20%20%20%20%20%20super().__init__()%0A%20%20%20%20%20%20%20%20self.value%20%3D%20nn.Parameter(torch.tensor(%5B0.%5D%2C%20dtype%3Dtorch.float64))%0A%0A%20%20%20%20def%20forward(self%2C%20target)%3A%0A%20%20%20%20%20%20%20%20error%20%3D%20self.value%20-%20target%0A%20%20%20%20%20%20%20%20return%20torch.stack((error%2C%202%20*%20error)%2C%20dim%3D-1)%0A%0Amodel%20%3D%20Model()%0Akernel%20%3D%20SquaredCost()%0Aoptimizer%20%3D%20pp.optim.GN(%0A%20%20%20%20model%2C%20kernel%3Dkernel%2C%20corrector%3Dpp.optim.corrector.Triggs(kernel))%0Aoptimizer.step(torch.tensor(2.%2C%20dtype%3Dtorch.float64))%0Atorch.testing.assert_close(%0A%20%20%20%20model.value%2C%20torch.tensor(%5B2%20%2F%203%5D%2C%20dtype%3Dtorch.float64))%0A%60%60%60%0A%0AThe%20cost%20is%20%6025%20*%20(value%20-%202)**4%60%2C%20so%20the%20robust%20Gauss-Newton%20step%20removes%20one%20third%20of%20the%20initial%20error.%20The%20assertion%20fails%20on%20main%20and%20passes%20after%20retaining%20the%20original%20residual%20factor.%0A%0A%23%23%20Proposed%20correction%20and%20validation%0A%0AMultiply%20the%20positive-curvature%20corrected%20residual%20by%20%60R%5BM%5D%60%2C%20matching%20the%20existing%20formula.%20The%20Jacobian%20correction%20and%20the%20zero-residual%2Fnonpositive-curvature%20paths%20keep%20their%20current%20behavior.%0A%0AThe%20independent%20regression%20suite%20compares%20corrected%20normal%20equations%20with%20autograd%20gradients%20and%20Hessians%2C%20covers%20multiple%20batch%20shapes%20and%20float32%2Ffloat64%2C%20and%20runs%20four%20real%20GN%20iterations%20from%20each%20residual%20sign.%0A%0AOriginal%3A%2010%20failed%2C%202%20passed.%20Patched%20full%20suite%3A%20412%20passed%2C%2018%20skipped%2C%209%20warnings.%20CUDA-dependent%20cases%20were%20not%20executed%20on%20the%20CPU%20runner.%0A%0AValidation%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43674059967%0A%0AThis%20is%20separate%20from%20%23468%2C%20which%20handles%20computing%20an%20exactly%20zero%20second%20derivative%3B%20this%20failure%20occurs%20after%20differentiation%20when%20the%20second%20derivative%20is%20positive.%0A%0AI%20intend%20to%20contribute%20the%20correction%20and%20regression%20tests.",
+  "pr_prefill": "https://github.com/pypose/pypose/compare/main...Afloat16:pypose:Afloat16/fix-triggs-positive-curvature-residuals?expand=1&title=Preserve%20residual%20values%20in%20positive-curvature%20Triggs%20correction&body=%23%23%20Why%0A%0AFor%20a%20kernel%20with%20positive%20second%20derivative%2C%20%60Triggs.forward%60%20currently%20overwrites%20the%20residual%20with%20a%20scale%20factor.%20This%20discards%20its%20sign%20and%20magnitude%2C%20violates%20the%20documented%20normal-equation%20gradient%2C%20and%20can%20move%20a%20real%20Gauss-Newton%20optimizer%20away%20from%20its%20target.%0A%0A%23%23%20Changes%0A%0AMultiply%20the%20positive-curvature%20scale%20by%20the%20original%20residual.%20Add%20independent%20gradient%2FHessian%20references%20across%20batch%20shapes%20and%20dtypes%2C%20controls%20for%20zero%20residuals%20and%20the%20negative-curvature%20fallback%2C%20and%20a%20real%20GN%20training%20regression%20from%20both%20sides%20of%20the%20target.%0A%0AThe%20production%20change%20is%20one%20line.%20This%20is%20independent%20of%20%23468's%20zero-second-derivative%20handling.%0A%0A%23%23%20Validation%0A%0A-%20Original%20source%3A%2010%20regression%20failures%20and%202%20passing%20controls.%0A-%20Patched%20exact%20source%20%60b60736c702fbab657c761c549885089e89c1e3bb%60%3A%20complete%20pytest%20suite%2C%20412%20passed%2C%2018%20skipped%2C%209%20warnings.%0A-%20Python%203.12%2C%20native%20PyTorch%202.8.0%2Bcpu%3B%20CUDA%20was%20unavailable.%0A-%20Compilation%20and%20%60git%20diff%20--check%60%20passed.%0A-%20CI%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43674059967%0A%0AThe%20separate%20fork%20validation%20branch%20contains%20the%20workflow%3B%20this%20PR%20contains%20only%20the%20correction%20and%20tests."
+}
