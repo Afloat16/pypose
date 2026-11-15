@@ -1,0 +1,79 @@
+{
+  "repository": "pypose/pypose",
+  "number": 2,
+  "title": "Avoid determinant overflow in similarity matrix conversion",
+  "base_sha": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "source_sha": "83ae936769dff7b81bd9a764690ce5f437a216c8",
+  "source_branch": "Afloat16/fix-similarity-scale-determinant-range",
+  "source_url": "https://github.com/Afloat16/pypose/tree/Afloat16/fix-similarity-scale-determinant-range",
+  "author": "Afloat16",
+  "files": [
+    "pypose/lietensor/convert.py",
+    "tests/lietensor/test_similarity_scale_range.py"
+  ],
+  "production_diff": "Both mat2Sim3 and mat2RxSO3 compute scale as exp(logdet(rot) / 3) instead of pow(det(rot), 1/3). Existing tolerance/rotation validation is unchanged.",
+  "validation": {
+    "run_id": 43674297109,
+    "run_url": "https://github.com/Afloat16/pypose/actions/runs/43674297109",
+    "workflow_branch": "validation/similarity-scale-range-20261115",
+    "workflow_sha": "d88f5703c85388db49b1987a33a20d06297118fa",
+    "result": "success",
+    "baseline": "18 failed, 2 passed",
+    "fixed": "420 passed, 18 skipped, 9 warnings",
+    "regression_cases": 20,
+    "environment": "Python 3.12.16, PyTorch 2.8.0+cpu, torchvision 0.23.0+cpu, pytest 8.4.2, numpy 2.2.6",
+    "limitations": [
+      "CPU only; CUDA-dependent cases skipped.",
+      "Small-scale tests explicitly set atol=0; the documented default minimum-scale tolerance is preserved."
+    ],
+    "artifact": {
+      "id": 14145965559,
+      "name": "similarity-scale-range-validation",
+      "size_in_bytes": 11280,
+      "url": "https://api.github.com/repos/Afloat16/pypose/actions/artifacts/14145965559",
+      "archive_download_url": "https://api.github.com/repos/Afloat16/pypose/actions/artifacts/14145965559/zip",
+      "expired": false,
+      "created_at": "2026-11-15T03:53:41Z",
+      "expires_at": "2027-02-13T03:52:44Z",
+      "updated_at": "2026-11-15T03:53:41Z",
+      "digest": "sha256:7e7b7274c91bfce24212315fb9d3ea082379f266c40a95772a2f4120ffc45422",
+      "workflow_run": {
+        "id": 43674297109,
+        "repository_id": 1408259171,
+        "head_repository_id": 1408259171,
+        "head_branch": "validation/similarity-scale-range-20261115",
+        "head_sha": "d88f5703c85388db49b1987a33a20d06297118fa"
+      }
+    }
+  },
+  "novelty": {
+    "all_state_prs_at_initial_audit": 309,
+    "all_state_issues_at_initial_audit": 160,
+    "user_prs_at_initial_audit": 20,
+    "old_fork_branches": 21,
+    "old_branch_check": "All 21 original conversion files exactly match current upstream and still form the determinant first.",
+    "relevant_history": [
+      304,
+      302,
+      57,
+      55
+    ],
+    "distinction": "#304/#302 fixed extracting a square rotation block from a 3x4 matrix; this fixes numerical range in that already-correct block. Both conversion entry points share one improvement."
+  },
+  "policy": {
+    "guidance": "CONTRIBUTING.md requests issue discussion and full pytest. No concurrent numeric cap or mandatory AI/attribution disclosure found.",
+    "upstream_created": true,
+    "publication": "Created upstream issue #479, then PR #480 with Fixes #479.",
+    "merged": false
+  },
+  "upstream_issue_url": "https://github.com/pypose/pypose/issues/479",
+  "upstream_issue_number": 479,
+  "upstream_pr_url": "https://github.com/pypose/pypose/pull/480",
+  "upstream_pr_number": 480,
+  "issue_title": "Similarity matrix conversion overflows before taking the determinant cube root",
+  "issue_body": "## Bug\n\n`mat2Sim3` and `mat2RxSO3` recover scale with `det(rot)**(1/3)`. The determinant can overflow or underflow even when the input matrix, its scale, and its rotation are all representable. Taking a cube root afterward cannot recover the lost value.\n\nFor example, a float32 scale of `1e13` gives a determinant of `1e39`, so a valid similarity matrix is rejected by the subsequent rotation check.\n\n## Reproducer\n\nOn main `298e9f0862cb228b0e8851b2616e682ccdca6a32`, with native PyTorch 2.8.0+cpu:\n\n```python\nimport torch\nimport pypose as pp\n\nmatrix = torch.eye(3, dtype=torch.float32) * 1e13\nprint(torch.det(matrix))  # inf\n\nfor convert in (pp.mat2Sim3, pp.mat2RxSO3):\n    result = convert(matrix)  # raises on main\n    torch.testing.assert_close(\n        result.scale(), torch.tensor([1e13]), rtol=1e-5, atol=0)\n```\n\nThe inverse problem also occurs for very small nonzero scales when the caller explicitly lowers `atol`: for example, `1e-20` in float32 has a determinant that underflows to zero, even though the scale itself is representable.\n\n## Proposed correction and validation\n\nRecover the scale as `exp(logdet(rot) / 3)` in both conversions. Keep the existing `atol` validation; this does not change the documented minimum-scale policy.\n\nRegression coverage includes float32/float64, 3x3/3x4/4x4 inputs, both conversions, finite scale gradients, and existing invalid/tolerance controls.\n\nOriginal: 18 failed, 2 passed. Patched full suite: 420 passed, 18 skipped, 9 warnings on CPU.\n\nCI: https://github.com/Afloat16/pypose/actions/runs/43674297109\n\nI intend to contribute this shared numerical fix and its regression tests.",
+  "pr_title": "Avoid determinant overflow in similarity matrix conversion",
+  "pr_body": "Fixes #479.\n\n## Why\n\n`mat2Sim3` and `mat2RxSO3` can reject valid similarity matrices because computing the determinant overflows or underflows before its cube root is taken. This also prevents finite gradients through otherwise representable scales.\n\n## Changes\n\nEvaluate the same scale formula in log space, using `exp(logdet(rot) / 3)`, in both conversions. Preserve the existing scale tolerance and rotation checks.\n\nAdd tests for both floating-point dtypes and all supported matrix shapes, explicitly admitted small scales, real autograd gradients, and invalid/tolerance controls.\n\n## Validation\n\n- Original source: 18 failed regressions and 2 passing controls.\n- Patched source `83ae936769dff7b81bd9a764690ce5f437a216c8`: full pytest, 420 passed, 18 skipped, 9 warnings.\n- Python 3.12.16, native PyTorch 2.8.0+cpu; CUDA was unavailable.\n- Compilation and `git diff --check` passed.\n- CI: https://github.com/Afloat16/pypose/actions/runs/43674297109\n\nThe fork validation workflow is separate from the production branch.",
+  "issue_prefill": "https://github.com/pypose/pypose/issues/new?title=Similarity%20matrix%20conversion%20overflows%20before%20taking%20the%20determinant%20cube%20root&body=%23%23%20Bug%0A%0A%60mat2Sim3%60%20and%20%60mat2RxSO3%60%20recover%20scale%20with%20%60det(rot)**(1%2F3)%60.%20The%20determinant%20can%20overflow%20or%20underflow%20even%20when%20the%20input%20matrix%2C%20its%20scale%2C%20and%20its%20rotation%20are%20all%20representable.%20Taking%20a%20cube%20root%20afterward%20cannot%20recover%20the%20lost%20value.%0A%0AFor%20example%2C%20a%20float32%20scale%20of%20%601e13%60%20gives%20a%20determinant%20of%20%601e39%60%2C%20so%20a%20valid%20similarity%20matrix%20is%20rejected%20by%20the%20subsequent%20rotation%20check.%0A%0A%23%23%20Reproducer%0A%0AOn%20main%20%60298e9f0862cb228b0e8851b2616e682ccdca6a32%60%2C%20with%20native%20PyTorch%202.8.0%2Bcpu%3A%0A%0A%60%60%60python%0Aimport%20torch%0Aimport%20pypose%20as%20pp%0A%0Amatrix%20%3D%20torch.eye(3%2C%20dtype%3Dtorch.float32)%20*%201e13%0Aprint(torch.det(matrix))%20%20%23%20inf%0A%0Afor%20convert%20in%20(pp.mat2Sim3%2C%20pp.mat2RxSO3)%3A%0A%20%20%20%20result%20%3D%20convert(matrix)%20%20%23%20raises%20on%20main%0A%20%20%20%20torch.testing.assert_close(%0A%20%20%20%20%20%20%20%20result.scale()%2C%20torch.tensor(%5B1e13%5D)%2C%20rtol%3D1e-5%2C%20atol%3D0)%0A%60%60%60%0A%0AThe%20inverse%20problem%20also%20occurs%20for%20very%20small%20nonzero%20scales%20when%20the%20caller%20explicitly%20lowers%20%60atol%60%3A%20for%20example%2C%20%601e-20%60%20in%20float32%20has%20a%20determinant%20that%20underflows%20to%20zero%2C%20even%20though%20the%20scale%20itself%20is%20representable.%0A%0A%23%23%20Proposed%20correction%20and%20validation%0A%0ARecover%20the%20scale%20as%20%60exp(logdet(rot)%20%2F%203)%60%20in%20both%20conversions.%20Keep%20the%20existing%20%60atol%60%20validation%3B%20this%20does%20not%20change%20the%20documented%20minimum-scale%20policy.%0A%0ARegression%20coverage%20includes%20float32%2Ffloat64%2C%203x3%2F3x4%2F4x4%20inputs%2C%20both%20conversions%2C%20finite%20scale%20gradients%2C%20and%20existing%20invalid%2Ftolerance%20controls.%0A%0AOriginal%3A%2018%20failed%2C%202%20passed.%20Patched%20full%20suite%3A%20420%20passed%2C%2018%20skipped%2C%209%20warnings%20on%20CPU.%0A%0ACI%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43674297109%0A%0AI%20intend%20to%20contribute%20this%20shared%20numerical%20fix%20and%20its%20regression%20tests.",
+  "pr_prefill": "https://github.com/pypose/pypose/compare/main...Afloat16:pypose:Afloat16/fix-similarity-scale-determinant-range?expand=1&title=Avoid%20determinant%20overflow%20in%20similarity%20matrix%20conversion&body=Fixes%20%23479.%0A%0A%23%23%20Why%0A%0A%60mat2Sim3%60%20and%20%60mat2RxSO3%60%20can%20reject%20valid%20similarity%20matrices%20because%20computing%20the%20determinant%20overflows%20or%20underflows%20before%20its%20cube%20root%20is%20taken.%20This%20also%20prevents%20finite%20gradients%20through%20otherwise%20representable%20scales.%0A%0A%23%23%20Changes%0A%0AEvaluate%20the%20same%20scale%20formula%20in%20log%20space%2C%20using%20%60exp(logdet(rot)%20%2F%203)%60%2C%20in%20both%20conversions.%20Preserve%20the%20existing%20scale%20tolerance%20and%20rotation%20checks.%0A%0AAdd%20tests%20for%20both%20floating-point%20dtypes%20and%20all%20supported%20matrix%20shapes%2C%20explicitly%20admitted%20small%20scales%2C%20real%20autograd%20gradients%2C%20and%20invalid%2Ftolerance%20controls.%0A%0A%23%23%20Validation%0A%0A-%20Original%20source%3A%2018%20failed%20regressions%20and%202%20passing%20controls.%0A-%20Patched%20source%20%6083ae936769dff7b81bd9a764690ce5f437a216c8%60%3A%20full%20pytest%2C%20420%20passed%2C%2018%20skipped%2C%209%20warnings.%0A-%20Python%203.12.16%2C%20native%20PyTorch%202.8.0%2Bcpu%3B%20CUDA%20was%20unavailable.%0A-%20Compilation%20and%20%60git%20diff%20--check%60%20passed.%0A-%20CI%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43674297109%0A%0AThe%20fork%20validation%20workflow%20is%20separate%20from%20the%20production%20branch."
+}
