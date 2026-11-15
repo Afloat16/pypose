@@ -1,0 +1,116 @@
+name: Validate particle-filter prior covariance
+on:
+  push:
+    branches: [validation/pf-prior-covariance-20261115]
+permissions:
+  contents: read
+jobs:
+  native-pytorch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: e2fca95189764b2a489f770f43c83761a78b3af7
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install native CPU PyTorch and test dependencies
+        run: |
+          python -m pip install torch==2.8.0 torchvision==0.23.0 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install pytest==8.4.2 numpy==2.2.6 packaging==25.0
+      - name: Verify source and record environment
+        run: |
+          test "$(git rev-parse HEAD)" = "e2fca95189764b2a489f770f43c83761a78b3af7"
+          mkdir -p validation-results
+          git diff --check 298e9f0862cb228b0e8851b2616e682ccdca6a32 HEAD
+          python -m compileall -q pypose/module/pf.py tests/module/test_pf_prior_covariance.py
+          python -m pip freeze > validation-results/environment.txt
+          git diff 298e9f0862cb228b0e8851b2616e682ccdca6a32 HEAD > validation-results/source.patch
+      - name: Require original implementation to fail the regressions
+        run: |
+          python - <<'PY'
+          import pathlib
+          import subprocess
+          import sys
+          import xml.etree.ElementTree as ET
+
+          path = "pypose/module/pf.py"
+          original = subprocess.check_output(["git", "show", "298e9f0862cb228b0e8851b2616e682ccdca6a32:" + path])
+          pathlib.Path(path).write_bytes(original)
+          try:
+              result = subprocess.run([
+                  sys.executable, "-m", "pytest", "-q",
+                  "tests/module/test_pf_prior_covariance.py",
+                  "--junitxml=validation-results/original.xml",
+              ])
+          finally:
+              subprocess.run(["git", "restore", "--source=e2fca95189764b2a489f770f43c83761a78b3af7", "--", path], check=True)
+          root = ET.parse("validation-results/original.xml").getroot()
+          cases = root.findall(".//testcase")
+          failures = [case.attrib["name"] for case in cases if case.find("failure") is not None]
+          assert result.returncode == 1, result.returncode
+          assert not root.findall(".//error")
+          assert any("no_information" in name for name in failures), failures
+          assert any("linear_gaussian" in name for name in failures), failures
+          print("Original regression failures:", len(failures), "of", len(cases))
+          PY
+      - name: Run the complete test suite on the exact patched source
+        run: |
+          python - <<'PY'
+          import random
+          import numpy as np
+          import pytest
+          import torch
+
+          random.seed(0)
+          np.random.seed(0)
+          torch.manual_seed(0)
+          print("Native torch:", torch.__version__, "CUDA available:", torch.cuda.is_available())
+          raise SystemExit(pytest.main(["-q", "--junitxml=validation-results/patched-full.xml"]))
+          PY
+      - name: Build the updated Sphinx documentation
+        run: |
+          python -m pip install -r requirements/docs.txt
+          python -m sphinx -M html docs/source docs/build 2>&1 | tee validation-results/docs-build.log
+          python - <<'PY'
+          import pathlib
+          path = pathlib.Path("docs/build/html/generated/pypose.module.PF.html")
+          html = path.read_text()
+          assert "supplied prior covariance" in html
+          assert r"n\\cdot\\mathbf{P}" not in html
+          print("PF rendered HTML:", path)
+          PY
+      - name: Inspect the rendered particle-generation equation
+        run: |
+          python -m pip install playwright==1.51.0
+          python -m playwright install --with-deps chromium
+          python - <<'PY'
+          import base64
+          import pathlib
+          from playwright.sync_api import sync_playwright
+          page_path = pathlib.Path("docs/build/html/generated/pypose.module.PF.html").resolve()
+          with sync_playwright() as p:
+              browser = p.chromium.launch()
+              page = browser.new_page(viewport={"width": 1280, "height": 1000}, device_scale_factor=1)
+              page.goto(page_path.as_uri(), wait_until="networkidle")
+              section = page.locator("li").filter(has_text="Generate Particles.").first
+              section.locator(".katex").first.wait_for(state="visible", timeout=30000)
+              text = section.inner_text()
+              assert "supplied prior covariance" in text
+              print("PF_DOC_TEXT:", repr(text))
+              screenshot = section.screenshot(path="validation-results/pf-equation.png")
+              print("PF_DOC_PNG:" + base64.b64encode(screenshot).decode())
+              browser.close()
+          PY
+      - name: Verify validation did not alter production files
+        run: git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pf-prior-covariance-validation
+          path: validation-results/
