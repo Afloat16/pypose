@@ -1,0 +1,117 @@
+{
+  "repository": "pypose/pypose",
+  "number": 3,
+  "title": "Preserve the supplied prior covariance in particle-filter sampling",
+  "base_sha": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "source_sha": "e2fca95189764b2a489f770f43c83761a78b3af7",
+  "source_branch": "Afloat16/fix-particle-filter-prior-covariance",
+  "source_url": "https://github.com/Afloat16/pypose/tree/Afloat16/fix-particle-filter-prior-covariance",
+  "author": "Afloat16",
+  "files": [
+    "pypose/module/pf.py",
+    "tests/module/test_pf_prior_covariance.py"
+  ],
+  "production_diff": "PF.forward samples from P instead of n*P; the corresponding particle-generation doc equation and prose are corrected.",
+  "validation": {
+    "run_id": 43675050219,
+    "run_url": "https://github.com/Afloat16/pypose/actions/runs/43675050219",
+    "workflow_branch": "validation/pf-prior-covariance-20261115",
+    "workflow_sha": "919d8c76820c5a1cc9eb30dd16f7a90979384d81",
+    "result": "success",
+    "baseline": "14 failed, 2 passed",
+    "fixed": "416 passed, 18 skipped, 9 warnings",
+    "regression_cases": 16,
+    "environment": "Ubuntu 24.04, Python 3.12, PyTorch 2.8.0+cpu, torchvision 0.23.0+cpu, pytest 8.4.2, numpy 2.2.6",
+    "documentation": "Sphinx 5.0.0 full HTML build succeeded. Changed particle-generation equation rendered in Chromium via Playwright 1.51.0, screenshot visually inspected: x_k = p(x, P_k, N), P_k = P. Clear text, no obsolete n multiplier.",
+    "limitations": [
+      "CPU only; CUDA-dependent tests skipped.",
+      "PF regressions use fixed-seed real Monte Carlo samples with tolerances appropriate to sampling error, not exact sample-by-sample equality.",
+      "Initial validation passed full tests and Sphinx but browser installation failed on Ubuntu 26.04. Final run pins Ubuntu 24.04 and passes the complete rendering check."
+    ],
+    "artifact": {
+      "id": 14145741726,
+      "name": "pf-prior-covariance-validation",
+      "size_in_bytes": 23732,
+      "url": "https://api.github.com/repos/Afloat16/pypose/actions/artifacts/14145741726",
+      "archive_download_url": "https://api.github.com/repos/Afloat16/pypose/actions/artifacts/14145741726/zip",
+      "expired": false,
+      "created_at": "2026-11-15T04:05:01Z",
+      "expires_at": "2027-02-13T04:03:17Z",
+      "updated_at": "2026-11-15T04:05:01Z",
+      "digest": "sha256:eb320c8e07de7acd445c3fc82d12ce50ab66ddf2e185ed28c6d65a35d1afca70",
+      "workflow_run": {
+        "id": 43675050219,
+        "repository_id": 1408259171,
+        "head_repository_id": 1408259171,
+        "head_branch": "validation/pf-prior-covariance-20261115",
+        "head_sha": "919d8c76820c5a1cc9eb30dd16f7a90979384d81"
+      }
+    }
+  },
+  "investigation": {
+    "run_url": "https://github.com/Afloat16/pypose/actions/runs/43674678271",
+    "source_sha": "42505e53c78df0ae6d536fb94b1d0dca2787f61e",
+    "particles": 200000,
+    "prior": [
+      [
+        1,
+        0.3
+      ],
+      [
+        0.3,
+        0.5
+      ]
+    ],
+    "original_no_information_covariance": [
+      [
+        1.9776761083124237,
+        0.5872177740994733
+      ],
+      [
+        0.5872177740994733,
+        0.9929430691682646
+      ]
+    ],
+    "linear_posterior_expected_mean": [
+      0.5875555555555556,
+      -0.15866666666666668
+    ],
+    "linear_posterior_original_mean": [
+      0.7083274471309061,
+      -0.22785590110507706
+    ]
+  },
+  "novelty": {
+    "all_state_prs_at_initial_audit": 309,
+    "all_state_issues_at_initial_audit": 160,
+    "user_prs_at_initial_audit": 20,
+    "old_fork_branches": 21,
+    "old_branch_check": "All 21 original PF source files retain generate_particles(x, n * P).",
+    "relevant_history": [
+      352,
+      427,
+      426,
+      197,
+      175,
+      170,
+      146
+    ],
+    "distinction": "#352 fixes particle/batch axes and normalization; #427 fixes example process noise. This restores the supplied prior covariance in the actual filter. Existing documentation also had nP and is explicitly corrected."
+  },
+  "policy": {
+    "guidance": "CONTRIBUTING.md: issue before substantial changes, full pytest, inspect rendered docs. Issue #481 was published after a native reproduction and before production implementation.",
+    "upstream_created": true,
+    "publication": "Created issue #481, then PR #482 with Fixes #481 after full tests and rendered docs passed.",
+    "merged": false
+  },
+  "upstream_issue_url": "https://github.com/pypose/pypose/issues/481",
+  "upstream_issue_number": 481,
+  "upstream_pr_url": "https://github.com/pypose/pypose/pull/482",
+  "upstream_pr_number": 482,
+  "issue_title": "Particle-filter prior covariance is multiplied by the state dimension",
+  "issue_body": "## Bug\n\n`PF.forward` samples its Gaussian prior with `generate_particles(x, n * P)`, where `n` is the state dimension. The `P` argument is documented as the previous state-estimation covariance, so this changes the represented prior whenever `n > 1`.\n\nThe current particle-generation equation also contains `n * P`; I believe both the implementation and that equation need correction. There is no corresponding importance-weight correction for sampling from this inflated Gaussian: the weights only use the observation likelihood.\n\n## Reproducer\n\nWith an identity transition, zero process noise, and a constant observation function, the measurement carries no state information. The covariance should remain approximately `P` (up to Monte Carlo error), regardless of the state dimension.\n\n```python\nimport torch\nimport pypose as pp\n\nclass NoObservation(pp.module.NLS):\n    def state_transition(self, state, input, t=None):\n        return state\n\n    def observation(self, state, input, t=None):\n        return torch.zeros_like(state[..., :1])\n\ntorch.manual_seed(17)\nx = torch.tensor([0.2, -0.1], dtype=torch.float64)\nP = torch.tensor([[1., 0.3], [0.3, 0.5]], dtype=x.dtype)\npf = pp.module.PF(NoObservation(), particles=200000)\nmean, covariance = pf(\n    x, torch.zeros(1, dtype=x.dtype), torch.zeros_like(x),\n    P, torch.zeros_like(P), torch.ones(1, 1, dtype=x.dtype))\nprint(covariance)\n```\n\nOn main `298e9f0862cb228b0e8851b2616e682ccdca6a32`, native PyTorch 2.8.0+cpu, this gives approximately:\n\n```text\n[[1.977676, 0.587218],\n [0.587218, 0.992943]]\n```\n\nThe expected covariance is `[[1., 0.3], [0.3, 0.5]]`; the result is approximately twice that matrix.\n\nA second real-particle test with an identity observation and Gaussian measurement noise also disagrees with the exact linear-Gaussian posterior: expected mean `[0.587556, -0.158667]`, actual `[0.708327, -0.227856]`.\n\nInvestigation CI and exact script: https://github.com/Afloat16/pypose/actions/runs/43674678271\n\n## Intended contribution\n\nSample from the supplied covariance `P`, correct the particle-generation equation, and add real-sampling regression tests against no-information and linear-Gaussian analytic references, including batched/shared covariance inputs.\n\nThis is separate from #352's batch-axis, normalization and resampling fixes, and from #427's example process-noise timing.",
+  "pr_title": "Preserve the supplied prior covariance in particle-filter sampling",
+  "pr_body": "Fixes #481.\n\n## Why\n\n`PF.forward` samples from `n * P` rather than the supplied prior covariance `P`. Since the weights contain only the measurement likelihood, the inflated proposal changes the represented prior. For a two-dimensional identity system with no informative observation, covariance approximately doubles; repeated updates compound the inflation. A linear-Gaussian observation also produces a biased posterior relative to its analytic reference.\n\n## Changes\n\nSample particles with `P` directly and correct the corresponding particle-generation equation. Keep the existing likelihood, resampling, process-noise addition, and batch handling.\n\nAdd real Gaussian-sampling/resampling tests against no-information and analytic linear-Gaussian references. Coverage includes float32/float64, shared and per-batch correlated covariances, repeated updates, and one-dimensional controls.\n\n## Validation\n\n- Original implementation: 14 failed regressions, 2 passing controls.\n- Exact patched source `e2fca95189764b2a489f770f43c83761a78b3af7`: complete pytest, 416 passed, 18 skipped, 9 warnings.\n- Python 3.12, native PyTorch 2.8.0+cpu; CUDA was unavailable.\n- Sphinx documentation build passed. The changed equation was rendered in Chromium and visually checked.\n- Compilation and `git diff --check` passed.\n- CI: https://github.com/Afloat16/pypose/actions/runs/43675050219\n- Original public-API investigation: https://github.com/Afloat16/pypose/actions/runs/43674678271\n\nThis is separate from #352's batching changes and #427's process-noise example. The validation workflow lives in a separate fork branch.",
+  "issue_prefill": "https://github.com/pypose/pypose/issues/new?title=Particle-filter%20prior%20covariance%20is%20multiplied%20by%20the%20state%20dimension&body=%23%23%20Bug%0A%0A%60PF.forward%60%20samples%20its%20Gaussian%20prior%20with%20%60generate_particles(x%2C%20n%20*%20P)%60%2C%20where%20%60n%60%20is%20the%20state%20dimension.%20The%20%60P%60%20argument%20is%20documented%20as%20the%20previous%20state-estimation%20covariance%2C%20so%20this%20changes%20the%20represented%20prior%20whenever%20%60n%20%3E%201%60.%0A%0AThe%20current%20particle-generation%20equation%20also%20contains%20%60n%20*%20P%60%3B%20I%20believe%20both%20the%20implementation%20and%20that%20equation%20need%20correction.%20There%20is%20no%20corresponding%20importance-weight%20correction%20for%20sampling%20from%20this%20inflated%20Gaussian%3A%20the%20weights%20only%20use%20the%20observation%20likelihood.%0A%0A%23%23%20Reproducer%0A%0AWith%20an%20identity%20transition%2C%20zero%20process%20noise%2C%20and%20a%20constant%20observation%20function%2C%20the%20measurement%20carries%20no%20state%20information.%20The%20covariance%20should%20remain%20approximately%20%60P%60%20(up%20to%20Monte%20Carlo%20error)%2C%20regardless%20of%20the%20state%20dimension.%0A%0A%60%60%60python%0Aimport%20torch%0Aimport%20pypose%20as%20pp%0A%0Aclass%20NoObservation(pp.module.NLS)%3A%0A%20%20%20%20def%20state_transition(self%2C%20state%2C%20input%2C%20t%3DNone)%3A%0A%20%20%20%20%20%20%20%20return%20state%0A%0A%20%20%20%20def%20observation(self%2C%20state%2C%20input%2C%20t%3DNone)%3A%0A%20%20%20%20%20%20%20%20return%20torch.zeros_like(state%5B...%2C%20%3A1%5D)%0A%0Atorch.manual_seed(17)%0Ax%20%3D%20torch.tensor(%5B0.2%2C%20-0.1%5D%2C%20dtype%3Dtorch.float64)%0AP%20%3D%20torch.tensor(%5B%5B1.%2C%200.3%5D%2C%20%5B0.3%2C%200.5%5D%5D%2C%20dtype%3Dx.dtype)%0Apf%20%3D%20pp.module.PF(NoObservation()%2C%20particles%3D200000)%0Amean%2C%20covariance%20%3D%20pf(%0A%20%20%20%20x%2C%20torch.zeros(1%2C%20dtype%3Dx.dtype)%2C%20torch.zeros_like(x)%2C%0A%20%20%20%20P%2C%20torch.zeros_like(P)%2C%20torch.ones(1%2C%201%2C%20dtype%3Dx.dtype))%0Aprint(covariance)%0A%60%60%60%0A%0AOn%20main%20%60298e9f0862cb228b0e8851b2616e682ccdca6a32%60%2C%20native%20PyTorch%202.8.0%2Bcpu%2C%20this%20gives%20approximately%3A%0A%0A%60%60%60text%0A%5B%5B1.977676%2C%200.587218%5D%2C%0A%20%5B0.587218%2C%200.992943%5D%5D%0A%60%60%60%0A%0AThe%20expected%20covariance%20is%20%60%5B%5B1.%2C%200.3%5D%2C%20%5B0.3%2C%200.5%5D%5D%60%3B%20the%20result%20is%20approximately%20twice%20that%20matrix.%0A%0AA%20second%20real-particle%20test%20with%20an%20identity%20observation%20and%20Gaussian%20measurement%20noise%20also%20disagrees%20with%20the%20exact%20linear-Gaussian%20posterior%3A%20expected%20mean%20%60%5B0.587556%2C%20-0.158667%5D%60%2C%20actual%20%60%5B0.708327%2C%20-0.227856%5D%60.%0A%0AInvestigation%20CI%20and%20exact%20script%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43674678271%0A%0A%23%23%20Intended%20contribution%0A%0ASample%20from%20the%20supplied%20covariance%20%60P%60%2C%20correct%20the%20particle-generation%20equation%2C%20and%20add%20real-sampling%20regression%20tests%20against%20no-information%20and%20linear-Gaussian%20analytic%20references%2C%20including%20batched%2Fshared%20covariance%20inputs.%0A%0AThis%20is%20separate%20from%20%23352's%20batch-axis%2C%20normalization%20and%20resampling%20fixes%2C%20and%20from%20%23427's%20example%20process-noise%20timing.",
+  "pr_prefill": "https://github.com/pypose/pypose/compare/main...Afloat16:pypose:Afloat16/fix-particle-filter-prior-covariance?expand=1&title=Preserve%20the%20supplied%20prior%20covariance%20in%20particle-filter%20sampling&body=Fixes%20%23481.%0A%0A%23%23%20Why%0A%0A%60PF.forward%60%20samples%20from%20%60n%20*%20P%60%20rather%20than%20the%20supplied%20prior%20covariance%20%60P%60.%20Since%20the%20weights%20contain%20only%20the%20measurement%20likelihood%2C%20the%20inflated%20proposal%20changes%20the%20represented%20prior.%20For%20a%20two-dimensional%20identity%20system%20with%20no%20informative%20observation%2C%20covariance%20approximately%20doubles%3B%20repeated%20updates%20compound%20the%20inflation.%20A%20linear-Gaussian%20observation%20also%20produces%20a%20biased%20posterior%20relative%20to%20its%20analytic%20reference.%0A%0A%23%23%20Changes%0A%0ASample%20particles%20with%20%60P%60%20directly%20and%20correct%20the%20corresponding%20particle-generation%20equation.%20Keep%20the%20existing%20likelihood%2C%20resampling%2C%20process-noise%20addition%2C%20and%20batch%20handling.%0A%0AAdd%20real%20Gaussian-sampling%2Fresampling%20tests%20against%20no-information%20and%20analytic%20linear-Gaussian%20references.%20Coverage%20includes%20float32%2Ffloat64%2C%20shared%20and%20per-batch%20correlated%20covariances%2C%20repeated%20updates%2C%20and%20one-dimensional%20controls.%0A%0A%23%23%20Validation%0A%0A-%20Original%20implementation%3A%2014%20failed%20regressions%2C%202%20passing%20controls.%0A-%20Exact%20patched%20source%20%60e2fca95189764b2a489f770f43c83761a78b3af7%60%3A%20complete%20pytest%2C%20416%20passed%2C%2018%20skipped%2C%209%20warnings.%0A-%20Python%203.12%2C%20native%20PyTorch%202.8.0%2Bcpu%3B%20CUDA%20was%20unavailable.%0A-%20Sphinx%20documentation%20build%20passed.%20The%20changed%20equation%20was%20rendered%20in%20Chromium%20and%20visually%20checked.%0A-%20Compilation%20and%20%60git%20diff%20--check%60%20passed.%0A-%20CI%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43675050219%0A-%20Original%20public-API%20investigation%3A%20https%3A%2F%2Fgithub.com%2FAfloat16%2Fpypose%2Factions%2Fruns%2F43674678271%0A%0AThis%20is%20separate%20from%20%23352's%20batching%20changes%20and%20%23427's%20process-noise%20example.%20The%20validation%20workflow%20lives%20in%20a%20separate%20fork%20branch."
+}
