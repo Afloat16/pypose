@@ -6,7 +6,7 @@ permissions:
   contents: read
 jobs:
   native-pytorch:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
       OMP_NUM_THREADS: "1"
@@ -82,7 +82,7 @@ jobs:
           path = pathlib.Path("docs/build/html/generated/pypose.module.PF.html")
           html = path.read_text()
           assert "supplied prior covariance" in html
-          assert r"n\\cdot\\mathbf{P}" not in html
+          assert r"n\cdot\mathbf{P}" not in html
           print("PF rendered HTML:", path)
           PY
       - name: Inspect the rendered particle-generation equation
