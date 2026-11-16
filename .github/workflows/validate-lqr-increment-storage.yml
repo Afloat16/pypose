@@ -1,0 +1,69 @@
+name: Validate LQR increment storage
+on:
+  push:
+    branches: [validation/pypose-lqr-increment-storage-20261116]
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - torch: '2.5.1'
+            vision: '0.20.1'
+          - torch: '2.6.0'
+            vision: '0.21.0'
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native dependencies
+        run: |
+          python -m pip install numpy==1.26.4 pytest
+          python -m pip install torch==${{ matrix.torch }} torchvision==${{ matrix.vision }} --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e . --no-deps
+      - name: Confirm isolated production source
+        run: |
+          git diff --exit-code 23853bda897abc44180471cc050c5c9f50abd0d9 HEAD -- pypose tests
+          python -c "import torch,pypose; print(torch.__version__, pypose.__file__)"
+      - name: Independent condensed-problem checks on unchanged source
+        run: |
+          git show 298e9f0862cb228b0e8851b2616e682ccdca6a32:pypose/module/lqr.py > pypose/module/lqr.py
+          python -m pytest -q tests/module/test_lqr_gradients.py
+      - name: Restore exact candidate and run the full repository suite
+        run: |
+          git show 23853bda897abc44180471cc050c5c9f50abd0d9:pypose/module/lqr.py > pypose/module/lqr.py
+          git diff --exit-code 23853bda897abc44180471cc050c5c9f50abd0d9 -- pypose tests
+          python - <<'PY'
+          import random,numpy,torch,pytest
+          random.seed(0);numpy.random.seed(0);torch.manual_seed(0)
+          raise SystemExit(pytest.main(['-q']))
+          PY
+      - name: Reconstruct previous source history
+        if: matrix.torch == '2.6.0'
+        run: |
+          git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+          git fetch https://github.com/pypose/pypose.git '+refs/heads/*:refs/remotes/upstream/*' '+refs/pull/*/head:refs/remotes/upstream-pr/*'
+          python .validation/audit_lqr_increment_history.py
+      - name: Alternating controller and gradient benchmarks
+        if: matrix.torch == '2.6.0'
+        run: python .validation/benchmark_lqr_increment_storage.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lqr-increment-${{ matrix.torch }}
+          path: |
+            lqr-increment-results.json
+            lqr-increment-history.json
