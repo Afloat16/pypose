@@ -1,0 +1,41 @@
+{
+  "base": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "production": "23853bda897abc44180471cc050c5c9f50abd0d9",
+  "validation_head": "fa8ede5e12359d22823940105bcf0eab7045c001",
+  "run": "https://github.com/Afloat16/pypose/actions/runs/43960623977",
+  "tests": {
+    "2.5.1": {
+      "baseline_condensed_oracle_passed": 16,
+      "full_passed": 416,
+      "full_skipped": 18,
+      "job": 133626738222
+    },
+    "2.6.0": {
+      "baseline_condensed_oracle_passed": 16,
+      "full_passed": 416,
+      "full_skipped": 18,
+      "job": 133626737855
+    }
+  },
+  "novelty": {
+    "revisions_including_this_new_commit": 203,
+    "prior_source_blobs": 115,
+    "forward_and_rollout_method_variants": 90,
+    "rollout_variants": 44,
+    "note": "All 33 nominal-increment rollout variants retain a full tensor or list; 11 older direct-linear rollout variants have no nominal increment and implement a different algorithm. No prior elimination of this unused increment history was found."
+  },
+  "performance_summary": {
+    "parity_cases": 16,
+    "training_parity_cases": 8,
+    "outputs_exact": true,
+    "x_init_p_vjp_exact": true,
+    "gradient_scope": "One weighted-square output functional with respect to x_init and p only",
+    "allocated_history_bytes_omitted_large_case": 524288,
+    "copy_slices_before": 1280,
+    "copy_slices_after": 1024,
+    "positive_event_allocation_bytes_before": 2814210315,
+    "positive_event_allocation_bytes_after": 2519582723,
+    "memory_scope": "Cumulative positive self CPU allocation accounting from profiler events, not peak memory.",
+    "timing_scope": "CPU float32/float64; 12 permuted measurements per implementation; two identical baseline controls."
+  }
+}

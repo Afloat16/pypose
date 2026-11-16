@@ -1,0 +1,700 @@
+{
+  "base": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "production": "23853bda897abc44180471cc050c5c9f50abd0d9",
+  "python": "3.12.16",
+  "torch": "2.6.0+cpu",
+  "numpy": "1.26.4",
+  "threads": 1,
+  "platform": "Linux-7.0.0-1014-aws-x86_64-with-glibc2.39",
+  "parity": [
+    {
+      "dtype": "torch.float32",
+      "warm": false,
+      "batch": 1,
+      "horizon": 1,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "8c92c0b99297f22206322690951f9e578c9644c70c48928618514ccda347c946",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": false,
+      "batch": 1,
+      "horizon": 1,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "8c92c0b99297f22206322690951f9e578c9644c70c48928618514ccda347c946",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": false,
+      "batch": 3,
+      "horizon": 9,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "005c74abbc926f19dcf575a2fd61a778fde4b33bdad234f7b274d69dfaebeb5e",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": false,
+      "batch": 3,
+      "horizon": 9,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "005c74abbc926f19dcf575a2fd61a778fde4b33bdad234f7b274d69dfaebeb5e",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": true,
+      "batch": 1,
+      "horizon": 1,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "dc8982bf8b561e045e7aa32540774a10d05110d66ae0b3d197d12959d8db3488",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": true,
+      "batch": 1,
+      "horizon": 1,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "dc8982bf8b561e045e7aa32540774a10d05110d66ae0b3d197d12959d8db3488",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": true,
+      "batch": 3,
+      "horizon": 9,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "e60c0d860b78c334f17db0f23fbb813a0987a191c4ee9f696245aede132460d7",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float32",
+      "warm": true,
+      "batch": 3,
+      "horizon": 9,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "e60c0d860b78c334f17db0f23fbb813a0987a191c4ee9f696245aede132460d7",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": false,
+      "batch": 1,
+      "horizon": 1,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "1e016cb8637e841f37437b3fdd027f8201fe00a7872ca97a1abc9afb7d70e603",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": false,
+      "batch": 1,
+      "horizon": 1,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "1e016cb8637e841f37437b3fdd027f8201fe00a7872ca97a1abc9afb7d70e603",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": false,
+      "batch": 3,
+      "horizon": 9,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "8cb4488ba010a6cce7ae71c4c13dc4cf478909db427ed2b5432341da51f70e7d",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": false,
+      "batch": 3,
+      "horizon": 9,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "8cb4488ba010a6cce7ae71c4c13dc4cf478909db427ed2b5432341da51f70e7d",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": true,
+      "batch": 1,
+      "horizon": 1,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "03268cda0e25c9cadd8ffc5c3bb3784c152bd14086d82aa5c71a795c4295cfa3",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": true,
+      "batch": 1,
+      "horizon": 1,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "03268cda0e25c9cadd8ffc5c3bb3784c152bd14086d82aa5c71a795c4295cfa3",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": true,
+      "batch": 3,
+      "horizon": 9,
+      "training": false,
+      "outputs_exact": true,
+      "outputs_sha256": "001574ee322a1de2bc223417eb4596d506a7a6fb9189a3d8bc97b62f03e31724",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": []
+    },
+    {
+      "dtype": "torch.float64",
+      "warm": true,
+      "batch": 3,
+      "horizon": 9,
+      "training": true,
+      "outputs_exact": true,
+      "outputs_sha256": "001574ee322a1de2bc223417eb4596d506a7a6fb9189a3d8bc97b62f03e31724",
+      "gradients_exact": true,
+      "gradient_max_abs_difference": [
+        0,
+        0
+      ]
+    }
+  ],
+  "benchmarks": [
+    {
+      "batch": 2,
+      "horizon": 32,
+      "states": 4,
+      "controls": 2,
+      "dtype": "torch.float64",
+      "training": false,
+      "warm": true,
+      "samples_ms": {
+        "base_a": [
+          9.984914999989769,
+          9.365878000011207,
+          9.4972480000024,
+          9.378198000007387,
+          9.446272000019462,
+          9.473068999994894,
+          9.529880000002322,
+          9.457176000012169,
+          9.353800000013734,
+          9.430557000001727,
+          9.406215000012708,
+          9.43664700000113
+        ],
+        "base_b": [
+          9.480940000003102,
+          9.421830999997383,
+          9.382820000013226,
+          9.406680000012102,
+          9.389096000006703,
+          9.493016999982729,
+          9.506539999989627,
+          9.381064999985256,
+          9.419739999998455,
+          9.445884999990994,
+          9.385576999989098,
+          9.451623000018117
+        ],
+        "candidate": [
+          9.289369000015313,
+          9.289941000020008,
+          9.235334999999623,
+          9.250334000000748,
+          9.205789000020559,
+          9.256451999988258,
+          9.414684000006446,
+          9.513362999996389,
+          9.60893399999918,
+          9.227455000001328,
+          9.232271000001901,
+          9.322422999986202
+        ]
+      },
+      "median_ms": {
+        "base_a": 9.441459500010296,
+        "base_b": 9.420785499997919,
+        "candidate": 9.272910500001785
+      },
+      "base_a_over_candidate": 1.0181764937781377,
+      "base_b_over_candidate": 1.0159469888117765,
+      "base_a_over_base_b": 1.0021945091534439,
+      "omitted_history_buffer_bytes": 1024
+    },
+    {
+      "batch": 2,
+      "horizon": 32,
+      "states": 4,
+      "controls": 2,
+      "dtype": "torch.float64",
+      "training": true,
+      "warm": true,
+      "samples_ms": {
+        "base_a": [
+          23.569567999999208,
+          23.998025999986794,
+          24.57296700001166,
+          24.160260000002154,
+          24.54212899999675,
+          25.07709599998975,
+          25.341590000010683,
+          36.70064799999295,
+          25.125804999987622,
+          25.067156999995177,
+          25.316515000014306,
+          25.069594000001416
+        ],
+        "base_b": [
+          23.54492099999561,
+          24.82521400000337,
+          24.722854000003736,
+          33.452366000005895,
+          24.647362000024486,
+          24.85539899998912,
+          25.481480999985706,
+          24.712690999990627,
+          25.001193999997895,
+          25.367225999985976,
+          25.8815029999937,
+          37.38380699999766
+        ],
+        "candidate": [
+          23.19135999999844,
+          23.256112000012763,
+          23.78300600000216,
+          23.464029999985314,
+          23.55350800002043,
+          24.028138000005583,
+          24.410595000006197,
+          23.932148000000097,
+          24.269328000002588,
+          24.394540000002962,
+          24.41157399999838,
+          24.580411999977514
+        ]
+      },
+      "median_ms": {
+        "base_a": 25.068375499998297,
+        "base_b": 24.928296499993507,
+        "candidate": 23.98014300000284
+      },
+      "base_a_over_candidate": 1.0453805675802403,
+      "base_b_over_candidate": 1.0395391095036655,
+      "base_a_over_base_b": 1.0056192768729635,
+      "omitted_history_buffer_bytes": 1024
+    },
+    {
+      "batch": 16,
+      "horizon": 128,
+      "states": 4,
+      "controls": 2,
+      "dtype": "torch.float32",
+      "training": false,
+      "warm": true,
+      "samples_ms": {
+        "base_a": [
+          40.32803000001195,
+          40.008821000014905,
+          40.402628999999024,
+          40.61872200000494,
+          40.82126900001981,
+          40.23043899999834,
+          42.23310499997979,
+          42.20875199999341,
+          41.2525579999965,
+          41.23632799999655,
+          41.91023699999619,
+          41.58790500000009
+        ],
+        "base_b": [
+          39.97345299998756,
+          40.05678199999352,
+          39.82355799999482,
+          48.979381000009425,
+          41.08705299998405,
+          40.43767199999593,
+          41.42526600000451,
+          40.82915000000753,
+          41.87380600001234,
+          41.23114500001179,
+          41.29822600000921,
+          41.53548599998658
+        ],
+        "candidate": [
+          39.45827100000088,
+          39.33418299999403,
+          43.81921099999886,
+          44.75289000001226,
+          39.68170800001758,
+          40.1389730000119,
+          40.55335000001037,
+          40.53269600001386,
+          40.428375000004735,
+          40.465562000008504,
+          40.43415800001071,
+          40.476019999999835
+        ]
+      },
+      "median_ms": {
+        "base_a": 41.02879850000818,
+        "base_b": 41.15909899999792,
+        "candidate": 40.44986000000961
+      },
+      "base_a_over_candidate": 1.014312497002423,
+      "base_b_over_candidate": 1.0175337813279983,
+      "base_a_over_base_b": 0.9968342237037368,
+      "omitted_history_buffer_bytes": 16384
+    },
+    {
+      "batch": 16,
+      "horizon": 128,
+      "states": 4,
+      "controls": 2,
+      "dtype": "torch.float32",
+      "training": true,
+      "warm": true,
+      "samples_ms": {
+        "base_a": [
+          112.67810999999028,
+          108.32757000000015,
+          109.77675500001283,
+          161.62606100002108,
+          109.5738110000184,
+          111.68264899998803,
+          111.90047699997763,
+          112.19881700000656,
+          114.68156600000157,
+          112.97390900000437,
+          114.33013900000333,
+          178.14569099999744
+        ],
+        "base_b": [
+          108.14476999999556,
+          113.14729100001841,
+          110.29706900001202,
+          110.53205100000696,
+          110.39643099999807,
+          110.38770100000761,
+          112.42724199999543,
+          169.39016899999615,
+          112.84038200000168,
+          115.14742299999625,
+          111.7473599999812,
+          116.27604099999189
+        ],
+        "candidate": [
+          103.58581500000241,
+          109.42559400001528,
+          106.20419899998979,
+          108.14452200000346,
+          105.21728000000508,
+          107.7344050000022,
+          108.61086599999226,
+          109.19332000000281,
+          110.73808400001894,
+          109.18616200001452,
+          112.48537599999509,
+          108.58058100001244
+        ]
+      },
+      "median_ms": {
+        "base_a": 112.43846349999842,
+        "base_b": 112.08730099998832,
+        "candidate": 108.59572350000235
+      },
+      "base_a_over_candidate": 1.0353857396603283,
+      "base_b_over_candidate": 1.0321520718077437,
+      "base_a_over_base_b": 1.0031329374235725,
+      "omitted_history_buffer_bytes": 16384
+    },
+    {
+      "batch": 64,
+      "horizon": 256,
+      "states": 8,
+      "controls": 4,
+      "dtype": "torch.float64",
+      "training": false,
+      "warm": true,
+      "samples_ms": {
+        "base_a": [
+          134.28852999999208,
+          132.60491900001625,
+          134.1646550000064,
+          131.8120889999932,
+          132.5621600000204,
+          132.90442100000632,
+          135.38411699997255,
+          133.32139800002096,
+          133.22131900000045,
+          129.96306600001617,
+          130.45120800001087,
+          131.52915599999915
+        ],
+        "base_b": [
+          131.90113899997868,
+          132.74509400000056,
+          133.5628369999995,
+          130.79007199999637,
+          134.39331799997944,
+          132.8520750000166,
+          135.1914299999919,
+          130.0449469999876,
+          131.2560160000089,
+          129.39057100001605,
+          130.5552729999988,
+          132.73336899999322
+        ],
+        "candidate": [
+          130.9287720000043,
+          129.04969600000982,
+          129.6703120000018,
+          129.05285799999433,
+          130.81501599998546,
+          132.4624730000039,
+          133.5084840000036,
+          129.9543979999953,
+          130.62927600000762,
+          127.5261490000048,
+          131.38765599998692,
+          129.85290899999313
+        ]
+      },
+      "median_ms": {
+        "base_a": 132.7546700000113,
+        "base_b": 132.31725399998595,
+        "candidate": 130.29183700000146
+      },
+      "base_a_over_candidate": 1.018902435154167,
+      "base_b_over_candidate": 1.0155452332749324,
+      "base_a_over_base_b": 1.0033058122565435,
+      "omitted_history_buffer_bytes": 524288
+    },
+    {
+      "batch": 64,
+      "horizon": 256,
+      "states": 8,
+      "controls": 4,
+      "dtype": "torch.float64",
+      "training": true,
+      "warm": true,
+      "samples_ms": {
+        "base_a": [
+          524.3886730000042,
+          594.5864740000104,
+          613.9002689999984,
+          603.4495320000133,
+          558.8719959999935,
+          563.4081590000051,
+          561.5182000000232,
+          571.6240950000042,
+          567.3247649999951,
+          552.4676830000033,
+          616.2243919999923,
+          614.7872459999917
+        ],
+        "base_b": [
+          535.2490669999952,
+          547.5435259999983,
+          551.0381880000068,
+          556.6551120000156,
+          560.0982649999935,
+          567.0866459999786,
+          603.7844120000102,
+          617.5978470000132,
+          572.6921610000204,
+          606.3461310000093,
+          576.6615579999836,
+          556.2817839999923
+        ],
+        "candidate": [
+          511.1975940000093,
+          519.223788000005,
+          538.2140659999948,
+          532.423614999999,
+          547.5860249999869,
+          593.691879000005,
+          545.0247200000149,
+          545.2718850000053,
+          542.7153210000029,
+          538.9296900000033,
+          539.1516009999862,
+          538.8737940000112
+        ]
+      },
+      "median_ms": {
+        "base_a": 569.4744299999996,
+        "base_b": 563.592455499986,
+        "candidate": 539.0406454999948
+      },
+      "base_a_over_candidate": 1.05645916454366,
+      "base_b_over_candidate": 1.0455472332280582,
+      "base_a_over_base_b": 1.0104365742348262,
+      "omitted_history_buffer_bytes": 524288
+    }
+  ],
+  "profiles": {
+    "base_a": {
+      "positive_self_cpu_memory_bytes": 2814210315,
+      "copy_related_events": [
+        {
+          "name": "aten::clone",
+          "count": 3585,
+          "self_cpu_memory_usage": 40960
+        },
+        {
+          "name": "aten::copy_",
+          "count": 12294,
+          "self_cpu_memory_usage": -75776
+        },
+        {
+          "name": "aten::empty",
+          "count": 8963,
+          "self_cpu_memory_usage": 1648691840
+        },
+        {
+          "name": "autograd::engine::evaluate_function: torch::autograd::CopySlices",
+          "count": 1280,
+          "self_cpu_memory_usage": -941993984
+        },
+        {
+          "name": "torch::autograd::CopySlices",
+          "count": 1280,
+          "self_cpu_memory_usage": -6121472
+        }
+      ],
+      "memory_note": "Sum of positive per-event self CPU allocation accounting, not process peak memory."
+    },
+    "candidate": {
+      "positive_self_cpu_memory_bytes": 2519582723,
+      "copy_related_events": [
+        {
+          "name": "aten::clone",
+          "count": 3329,
+          "self_cpu_memory_usage": 12288
+        },
+        {
+          "name": "aten::copy_",
+          "count": 10759,
+          "self_cpu_memory_usage": -49152
+        },
+        {
+          "name": "aten::empty",
+          "count": 7939,
+          "self_cpu_memory_usage": 1512118720
+        },
+        {
+          "name": "autograd::engine::evaluate_function: torch::autograd::CopySlices",
+          "count": 1024,
+          "self_cpu_memory_usage": -807686144
+        },
+        {
+          "name": "torch::autograd::CopySlices",
+          "count": 1024,
+          "self_cpu_memory_usage": -5138432
+        }
+      ],
+      "memory_note": "Sum of positive per-event self CPU allocation accounting, not process peak memory."
+    }
+  },
+  "autograd_graph_nodes": {
+    "base_a": {
+      "SliceBackward0": 2047,
+      "SqueezeBackward4": 2556,
+      "UnsafeViewBackward0": 2556,
+      "BmmBackward0": 2556,
+      "ViewBackward0": 2557,
+      "ExpandBackward0": 2812,
+      "UnsqueezeBackward0": 2813,
+      "SelectBackward0": 1535,
+      "AddBackward0": 3067,
+      "CopySlices": 1280,
+      "ReshapeAliasBackward0": 255,
+      "CloneBackward0": 511,
+      "RepeatBackward0": 1,
+      "AccumulateGrad": 2,
+      "NegBackward0": 256,
+      "SqueezeBackward1": 256,
+      "CholeskySolveBackward0": 256,
+      "CatBackward0": 257,
+      "SubBackward0": 256,
+      "TransposeBackward0": 256,
+      "MulBackward0": 512,
+      "SumBackward1": 256
+    },
+    "candidate": {
+      "BmmBackward0": 2556,
+      "ViewBackward0": 2557,
+      "AddBackward0": 3067,
+      "ExpandBackward0": 2812,
+      "TransposeBackward0": 256,
+      "UnsqueezeBackward0": 2813,
+      "SelectBackward0": 1279,
+      "UnsafeViewBackward0": 2556,
+      "CloneBackward0": 511,
+      "MulBackward0": 512,
+      "SumBackward1": 256,
+      "SqueezeBackward4": 2556,
+      "CatBackward0": 257,
+      "SliceBackward0": 1791,
+      "ReshapeAliasBackward0": 255,
+      "SubBackward0": 256,
+      "SqueezeBackward1": 256,
+      "NegBackward0": 256,
+      "CopySlices": 1024,
+      "CholeskySolveBackward0": 256,
+      "AccumulateGrad": 2,
+      "RepeatBackward0": 1
+    }
+  },
+  "timing_note": "Twelve permuted measurements per implementation, two identical unchanged controls; no peak-memory claim."
+}
