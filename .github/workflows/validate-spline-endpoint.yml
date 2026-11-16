@@ -1,0 +1,54 @@
+name: Validate SE3 spline endpoint
+on:
+  push:
+    branches: [validation/pypose-spline-endpoint-20261116]
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - torch: '2.5.1'
+            vision: '0.20.1'
+          - torch: '2.6.0'
+            vision: '0.21.0'
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native dependencies
+        run: |
+          python -m pip install numpy==1.26.4 pytest
+          python -m pip install torch==${{ matrix.torch }} torchvision==${{ matrix.vision }} --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e . --no-deps
+      - name: Check exact production source
+        run: |
+          git diff --exit-code f9f11dd001876446be1a1dc51477ec20e4e59743 HEAD -- pypose tests
+          python -c "import torch,pypose; print(torch.__version__, pypose.__file__)"
+      - name: Full repository suite with seed zero
+        run: |
+          python - <<'PY'
+          import random,numpy,torch,pytest
+          random.seed(0);numpy.random.seed(0);torch.manual_seed(0)
+          raise SystemExit(pytest.main(['-q']))
+          PY
+      - name: Native complete interpolation parity and performance
+        run: |
+          python .validation/benchmark_pypose_bspline_endpoint.py spline-endpoint-results.json
+          cat spline-endpoint-results.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: spline-endpoint-${{ matrix.torch }}
+          path: spline-endpoint-results.json
