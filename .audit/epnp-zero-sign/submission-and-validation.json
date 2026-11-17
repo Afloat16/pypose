@@ -1,0 +1,2151 @@
+{
+  "pull_request": {
+    "url": "https://api.github.com/repos/pypose/pypose/pulls/547",
+    "id": 5352881551,
+    "node_id": "PR_kwDOGXS1m88AAAABPw59jw",
+    "html_url": "https://github.com/pypose/pypose/pull/547",
+    "diff_url": "https://github.com/pypose/pypose/pull/547.diff",
+    "patch_url": "https://github.com/pypose/pypose/pull/547.patch",
+    "issue_url": "https://api.github.com/repos/pypose/pypose/issues/547",
+    "commits_url": "https://api.github.com/repos/pypose/pypose/pulls/547/commits",
+    "review_comments_url": "https://api.github.com/repos/pypose/pypose/pulls/547/comments",
+    "review_comment_url": "https://api.github.com/repos/pypose/pypose/pulls/comments{/number}",
+    "comments_url": "https://api.github.com/repos/pypose/pypose/issues/547/comments",
+    "statuses_url": "https://api.github.com/repos/pypose/pypose/statuses/3706c43d4a345baf8206499465801c4ac7051a71",
+    "number": 547,
+    "state": "open",
+    "locked": false,
+    "title": "Preserve EPnP beta magnitudes when sign estimates are zero",
+    "user": {
+      "login": "Afloat16",
+      "id": 132809511,
+      "node_id": "U_kgDOB-qDJw",
+      "avatar_url": "https://avatars.githubusercontent.com/u/132809511?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Afloat16",
+      "html_url": "https://github.com/Afloat16",
+      "followers_url": "https://api.github.com/users/Afloat16/followers",
+      "following_url": "https://api.github.com/users/Afloat16/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Afloat16/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Afloat16/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Afloat16/subscriptions",
+      "organizations_url": "https://api.github.com/users/Afloat16/orgs",
+      "repos_url": "https://api.github.com/users/Afloat16/repos",
+      "events_url": "https://api.github.com/users/Afloat16/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Afloat16/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## Problem\n\nEPnP uses signs of least-squares coefficients to choose the directions of independently estimated beta magnitudes. A coefficient of `0.0` or `-0.0` currently contributes a zero multiplier and can erase a nonzero magnitude.\n\nFor example, the observed first 6-by-3 QR result `[-0.0, 4.575284e-05, 179.5135956]` produces an entirely zero two-vector candidate. Its scale becomes non-finite, and the batched pose SVD fails before another candidate can be selected.\n\n## Change\n\nUse +1 for a zero direction estimate in the two-, three- and four-vector initializations. Nonzero signs and magnitude calculations keep their existing behavior.\n\nFixes #546.\n\nThis selects a deterministic direction when an orientation coefficient is zero; it does not claim a unique optimal orientation from the remaining quadratic estimates. Truly all-zero estimates remain degenerate, and the existing `sqrt(abs(S))` derivative at a zero magnitude is not changed.\n\n## Validation\n\nThe [exact-source two-version run](https://github.com/Afloat16/pypose/actions/runs/44040766108) validates production commit `3706c43d4a345baf8206499465801c4ac7051a71` on CPU Torch **2.5.1 and 2.6.0**.\n\nOn each version:\n\n- The 88 new tests give **76 failures and 12 passing controls on unchanged main**, then all pass with this patch. They cover positive/negative zero, all sign-bearing positions, float32/float64, multiple batch axes, nonzero direction controls, all-zero estimates, and complete camera-pose regressions.\n- The full repository suite gives **488 passed, 18 skipped**.\n- 64 independent nonzero-coefficient comparisons preserve all four candidate outputs and their coefficient gradients bit for bit.\n- Eight ordinary public calls preserve poses bit for bit and match point/pixel/intrinsics gradients.\n- Eight public camera calls replay a zero first coefficient: all eight original calls fail at the non-finite SVD candidate; all eight patched calls recover the known camera pose.\n\nThe public replay tests explicitly inject the previously observed zero coefficient and use the existing `gelsd` beta solver to keep the rest of the comparison deterministic. They are not a natural failure-frequency measurement, and production solver selection is unchanged.\n\nMagnitude regressions for the four-vector initialization compare the set of squared magnitudes independently of its existing coefficient ordering. The nonzero compatibility checks separately preserve current outputs.\n\nThe history audit includes all 82 distinct PnP sources across 135 commits reachable from 343 fetched upstream PR heads and 69 existing account branches, including the earlier NumPy implementations and renamed helpers. The zeroing sign convention is present throughout; no equivalent zero-direction handling was found.\n",
+    "labels": [],
+    "milestone": null,
+    "active_lock_reason": null,
+    "created_at": "2026-11-17T07:45:20Z",
+    "updated_at": "2026-11-17T07:45:21Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "45599a8c47d68dff3158d8353cc987c5e7f4ea28",
+    "assignee": null,
+    "assignees": [],
+    "requested_reviewers": [
+      {
+        "login": "zitongzhan",
+        "id": 24406547,
+        "node_id": "MDQ6VXNlcjI0NDA2NTQ3",
+        "avatar_url": "https://avatars.githubusercontent.com/u/24406547?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/zitongzhan",
+        "html_url": "https://github.com/zitongzhan",
+        "followers_url": "https://api.github.com/users/zitongzhan/followers",
+        "following_url": "https://api.github.com/users/zitongzhan/following{/other_user}",
+        "gists_url": "https://api.github.com/users/zitongzhan/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/zitongzhan/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/zitongzhan/subscriptions",
+        "organizations_url": "https://api.github.com/users/zitongzhan/orgs",
+        "repos_url": "https://api.github.com/users/zitongzhan/repos",
+        "events_url": "https://api.github.com/users/zitongzhan/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/zitongzhan/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      }
+    ],
+    "requested_teams": [],
+    "head": {
+      "label": "Afloat16:Afloat16/epnp-zero-sign-20261117",
+      "ref": "Afloat16/epnp-zero-sign-20261117",
+      "repo": {
+        "id": 1408259171,
+        "node_id": "R_kgDOU_BUYw",
+        "name": "pypose",
+        "full_name": "Afloat16/pypose",
+        "owner": {
+          "login": "Afloat16",
+          "id": 132809511,
+          "node_id": "U_kgDOB-qDJw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/132809511?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Afloat16",
+          "html_url": "https://github.com/Afloat16",
+          "followers_url": "https://api.github.com/users/Afloat16/followers",
+          "following_url": "https://api.github.com/users/Afloat16/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Afloat16/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Afloat16/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Afloat16/subscriptions",
+          "organizations_url": "https://api.github.com/users/Afloat16/orgs",
+          "repos_url": "https://api.github.com/users/Afloat16/repos",
+          "events_url": "https://api.github.com/users/Afloat16/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Afloat16/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "private": false,
+        "fork": true,
+        "archived": false,
+        "disabled": false,
+        "description": "A library for differentiable robotics on manifolds.",
+        "homepage": "https://pypose.org",
+        "language": null,
+        "visibility": "public",
+        "is_template": false,
+        "topics": [],
+        "forks_count": 0,
+        "forks": 0,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "watchers": 0,
+        "open_issues_count": 0,
+        "open_issues": 0,
+        "size": 9118,
+        "default_branch": "main",
+        "has_issues": false,
+        "has_projects": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_downloads": false,
+        "has_discussions": false,
+        "has_pull_requests": true,
+        "pushed_at": "2026-11-17T07:42:26Z",
+        "created_at": "2026-10-07T04:50:27Z",
+        "updated_at": "2026-10-07T04:50:27Z",
+        "allow_forking": true,
+        "web_commit_signoff_required": true,
+        "pull_request_creation_policy": "all",
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "spdx_id": "Apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "url": "https://api.github.com/repos/Afloat16/pypose",
+        "html_url": "https://github.com/Afloat16/pypose",
+        "archive_url": "https://api.github.com/repos/Afloat16/pypose/{archive_format}{/ref}",
+        "assignees_url": "https://api.github.com/repos/Afloat16/pypose/assignees{/user}",
+        "blobs_url": "https://api.github.com/repos/Afloat16/pypose/git/blobs{/sha}",
+        "branches_url": "https://api.github.com/repos/Afloat16/pypose/branches{/branch}",
+        "collaborators_url": "https://api.github.com/repos/Afloat16/pypose/collaborators{/collaborator}",
+        "comments_url": "https://api.github.com/repos/Afloat16/pypose/comments{/number}",
+        "commits_url": "https://api.github.com/repos/Afloat16/pypose/commits{/sha}",
+        "compare_url": "https://api.github.com/repos/Afloat16/pypose/compare/{base}...{head}",
+        "contents_url": "https://api.github.com/repos/Afloat16/pypose/contents/{+path}",
+        "contributors_url": "https://api.github.com/repos/Afloat16/pypose/contributors",
+        "deployments_url": "https://api.github.com/repos/Afloat16/pypose/deployments",
+        "downloads_url": "https://api.github.com/repos/Afloat16/pypose/downloads",
+        "events_url": "https://api.github.com/repos/Afloat16/pypose/events",
+        "forks_url": "https://api.github.com/repos/Afloat16/pypose/forks",
+        "git_commits_url": "https://api.github.com/repos/Afloat16/pypose/git/commits{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Afloat16/pypose/git/refs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Afloat16/pypose/git/tags{/sha}",
+        "git_url": "git://github.com/Afloat16/pypose.git",
+        "issue_comment_url": "https://api.github.com/repos/Afloat16/pypose/issues/comments{/number}",
+        "issue_events_url": "https://api.github.com/repos/Afloat16/pypose/issues/events{/number}",
+        "issues_url": "https://api.github.com/repos/Afloat16/pypose/issues{/number}",
+        "keys_url": "https://api.github.com/repos/Afloat16/pypose/keys{/key_id}",
+        "labels_url": "https://api.github.com/repos/Afloat16/pypose/labels{/name}",
+        "languages_url": "https://api.github.com/repos/Afloat16/pypose/languages",
+        "merges_url": "https://api.github.com/repos/Afloat16/pypose/merges",
+        "milestones_url": "https://api.github.com/repos/Afloat16/pypose/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Afloat16/pypose/notifications{?since,all,participating}",
+        "pulls_url": "https://api.github.com/repos/Afloat16/pypose/pulls{/number}",
+        "releases_url": "https://api.github.com/repos/Afloat16/pypose/releases{/id}",
+        "ssh_url": "git@github.com:Afloat16/pypose.git",
+        "stargazers_url": "https://api.github.com/repos/Afloat16/pypose/stargazers",
+        "statuses_url": "https://api.github.com/repos/Afloat16/pypose/statuses/{sha}",
+        "subscribers_url": "https://api.github.com/repos/Afloat16/pypose/subscribers",
+        "subscription_url": "https://api.github.com/repos/Afloat16/pypose/subscription",
+        "tags_url": "https://api.github.com/repos/Afloat16/pypose/tags",
+        "teams_url": "https://api.github.com/repos/Afloat16/pypose/teams",
+        "trees_url": "https://api.github.com/repos/Afloat16/pypose/git/trees{/sha}",
+        "clone_url": "https://github.com/Afloat16/pypose.git",
+        "mirror_url": null,
+        "hooks_url": "https://api.github.com/repos/Afloat16/pypose/hooks",
+        "svn_url": "https://github.com/Afloat16/pypose"
+      },
+      "sha": "3706c43d4a345baf8206499465801c4ac7051a71",
+      "user": {
+        "login": "Afloat16",
+        "id": 132809511,
+        "node_id": "U_kgDOB-qDJw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/132809511?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/Afloat16",
+        "html_url": "https://github.com/Afloat16",
+        "followers_url": "https://api.github.com/users/Afloat16/followers",
+        "following_url": "https://api.github.com/users/Afloat16/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Afloat16/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/Afloat16/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Afloat16/subscriptions",
+        "organizations_url": "https://api.github.com/users/Afloat16/orgs",
+        "repos_url": "https://api.github.com/users/Afloat16/repos",
+        "events_url": "https://api.github.com/users/Afloat16/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/Afloat16/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      }
+    },
+    "base": {
+      "label": "pypose:main",
+      "ref": "main",
+      "repo": {
+        "id": 427079067,
+        "node_id": "R_kgDOGXS1mw",
+        "name": "pypose",
+        "full_name": "pypose/pypose",
+        "owner": {
+          "login": "pypose",
+          "id": 92556637,
+          "node_id": "O_kgDOBYRNXQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/92556637?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/pypose",
+          "html_url": "https://github.com/pypose",
+          "followers_url": "https://api.github.com/users/pypose/followers",
+          "following_url": "https://api.github.com/users/pypose/following{/other_user}",
+          "gists_url": "https://api.github.com/users/pypose/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/pypose/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/pypose/subscriptions",
+          "organizations_url": "https://api.github.com/users/pypose/orgs",
+          "repos_url": "https://api.github.com/users/pypose/repos",
+          "events_url": "https://api.github.com/users/pypose/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/pypose/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "private": false,
+        "fork": false,
+        "archived": false,
+        "disabled": false,
+        "description": "A library for differentiable robotics on manifolds.",
+        "homepage": "https://pypose.org",
+        "language": "Python",
+        "visibility": "public",
+        "is_template": false,
+        "topics": [
+          "autonomous-robots",
+          "computer-graphics",
+          "control",
+          "deep-learning",
+          "geometric-deep-learning",
+          "kalman-filter",
+          "learning",
+          "lie-group",
+          "optimization",
+          "physics",
+          "planning",
+          "pose-estimation",
+          "pose-graph-optimization",
+          "python",
+          "pytorch",
+          "robotics",
+          "slam"
+        ],
+        "forks_count": 139,
+        "forks": 139,
+        "stargazers_count": 1621,
+        "watchers_count": 1621,
+        "watchers": 1621,
+        "open_issues_count": 144,
+        "open_issues": 144,
+        "size": 10260,
+        "default_branch": "main",
+        "has_issues": true,
+        "has_projects": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_downloads": false,
+        "has_discussions": true,
+        "has_pull_requests": true,
+        "pushed_at": "2026-11-06T04:16:42Z",
+        "created_at": "2021-11-11T17:02:08Z",
+        "updated_at": "2026-11-16T04:09:25Z",
+        "allow_forking": true,
+        "web_commit_signoff_required": true,
+        "pull_request_creation_policy": "all",
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "spdx_id": "Apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "url": "https://api.github.com/repos/pypose/pypose",
+        "html_url": "https://github.com/pypose/pypose",
+        "archive_url": "https://api.github.com/repos/pypose/pypose/{archive_format}{/ref}",
+        "assignees_url": "https://api.github.com/repos/pypose/pypose/assignees{/user}",
+        "blobs_url": "https://api.github.com/repos/pypose/pypose/git/blobs{/sha}",
+        "branches_url": "https://api.github.com/repos/pypose/pypose/branches{/branch}",
+        "collaborators_url": "https://api.github.com/repos/pypose/pypose/collaborators{/collaborator}",
+        "comments_url": "https://api.github.com/repos/pypose/pypose/comments{/number}",
+        "commits_url": "https://api.github.com/repos/pypose/pypose/commits{/sha}",
+        "compare_url": "https://api.github.com/repos/pypose/pypose/compare/{base}...{head}",
+        "contents_url": "https://api.github.com/repos/pypose/pypose/contents/{+path}",
+        "contributors_url": "https://api.github.com/repos/pypose/pypose/contributors",
+        "deployments_url": "https://api.github.com/repos/pypose/pypose/deployments",
+        "downloads_url": "https://api.github.com/repos/pypose/pypose/downloads",
+        "events_url": "https://api.github.com/repos/pypose/pypose/events",
+        "forks_url": "https://api.github.com/repos/pypose/pypose/forks",
+        "git_commits_url": "https://api.github.com/repos/pypose/pypose/git/commits{/sha}",
+        "git_refs_url": "https://api.github.com/repos/pypose/pypose/git/refs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/pypose/pypose/git/tags{/sha}",
+        "git_url": "git://github.com/pypose/pypose.git",
+        "issue_comment_url": "https://api.github.com/repos/pypose/pypose/issues/comments{/number}",
+        "issue_events_url": "https://api.github.com/repos/pypose/pypose/issues/events{/number}",
+        "issues_url": "https://api.github.com/repos/pypose/pypose/issues{/number}",
+        "keys_url": "https://api.github.com/repos/pypose/pypose/keys{/key_id}",
+        "labels_url": "https://api.github.com/repos/pypose/pypose/labels{/name}",
+        "languages_url": "https://api.github.com/repos/pypose/pypose/languages",
+        "merges_url": "https://api.github.com/repos/pypose/pypose/merges",
+        "milestones_url": "https://api.github.com/repos/pypose/pypose/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/pypose/pypose/notifications{?since,all,participating}",
+        "pulls_url": "https://api.github.com/repos/pypose/pypose/pulls{/number}",
+        "releases_url": "https://api.github.com/repos/pypose/pypose/releases{/id}",
+        "ssh_url": "git@github.com:pypose/pypose.git",
+        "stargazers_url": "https://api.github.com/repos/pypose/pypose/stargazers",
+        "statuses_url": "https://api.github.com/repos/pypose/pypose/statuses/{sha}",
+        "subscribers_url": "https://api.github.com/repos/pypose/pypose/subscribers",
+        "subscription_url": "https://api.github.com/repos/pypose/pypose/subscription",
+        "tags_url": "https://api.github.com/repos/pypose/pypose/tags",
+        "teams_url": "https://api.github.com/repos/pypose/pypose/teams",
+        "trees_url": "https://api.github.com/repos/pypose/pypose/git/trees{/sha}",
+        "clone_url": "https://github.com/pypose/pypose.git",
+        "mirror_url": null,
+        "hooks_url": "https://api.github.com/repos/pypose/pypose/hooks",
+        "svn_url": "https://github.com/pypose/pypose"
+      },
+      "sha": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+      "user": {
+        "login": "pypose",
+        "id": 92556637,
+        "node_id": "O_kgDOBYRNXQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/92556637?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/pypose",
+        "html_url": "https://github.com/pypose",
+        "followers_url": "https://api.github.com/users/pypose/followers",
+        "following_url": "https://api.github.com/users/pypose/following{/other_user}",
+        "gists_url": "https://api.github.com/users/pypose/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/pypose/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/pypose/subscriptions",
+        "organizations_url": "https://api.github.com/users/pypose/orgs",
+        "repos_url": "https://api.github.com/users/pypose/repos",
+        "events_url": "https://api.github.com/users/pypose/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/pypose/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      }
+    },
+    "_links": {
+      "comments": {
+        "href": "https://api.github.com/repos/pypose/pypose/issues/547/comments"
+      },
+      "commits": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/547/commits"
+      },
+      "statuses": {
+        "href": "https://api.github.com/repos/pypose/pypose/statuses/3706c43d4a345baf8206499465801c4ac7051a71"
+      },
+      "html": {
+        "href": "https://github.com/pypose/pypose/pull/547"
+      },
+      "issue": {
+        "href": "https://api.github.com/repos/pypose/pypose/issues/547"
+      },
+      "review_comments": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/547/comments"
+      },
+      "review_comment": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/comments{/number}"
+      },
+      "self": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/547"
+      }
+    },
+    "author_association": "CONTRIBUTOR",
+    "auto_merge": null,
+    "draft": false,
+    "merged": false,
+    "mergeable": true,
+    "rebaseable": true,
+    "mergeable_state": "blocked",
+    "merged_by": null,
+    "comments": 0,
+    "review_comments": 0,
+    "maintainer_can_modify": false,
+    "commits": 1,
+    "additions": 110,
+    "deletions": 6,
+    "changed_files": 2
+  },
+  "baseline": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "production": "3706c43d4a345baf8206499465801c4ac7051a71",
+  "validation_commit": "afe339f8b74724539ae4e32a749797c4d8e6c8fb",
+  "run": "https://github.com/Afloat16/pypose/actions/runs/44040766108",
+  "jobs": [
+    {
+      "id": 133894516010,
+      "torch": "2.5.1",
+      "conclusion": "success"
+    },
+    {
+      "id": 133894516218,
+      "torch": "2.6.0",
+      "conclusion": "success"
+    }
+  ],
+  "each_version": {
+    "baseline_new_tests": {
+      "failed": 76,
+      "passed": 12,
+      "errors": 0
+    },
+    "candidate_full_suite": {
+      "passed": 488,
+      "skipped": 18
+    },
+    "nonzero_coefficient_value_and_gradient_bitwise_cases": 64,
+    "public_pose_gradient_nonzero_controls": 8,
+    "public_camera_signed_zero_replays": 8
+  },
+  "results": {
+    "2.5.1": [
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 0.000009212642908096313,
+          "translation_error": 0.000014781951904296875
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 0.000009212642908096313,
+          "translation_error": 0.000014781951904296875
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.4586915969848633e-7,
+          "translation_error": 0.000003337860107421875
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.4586915969848633e-7,
+          "translation_error": 0.000003337860107421875
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.743638649604918e-14,
+          "translation_error": 3.108624468950438e-14
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.743638649604918e-14,
+          "translation_error": 3.108624468950438e-14
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.609024107869118e-15,
+          "translation_error": 2.6645352591003757e-15
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.609024107869118e-15,
+          "translation_error": 2.6645352591003757e-15
+        }
+      }
+    ],
+    "2.6.0": [
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float32",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 0,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 1,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 2,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 3,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 4,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 5,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 6,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 7,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 8,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 9,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 10,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 11,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 12,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 13,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 14,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "nonzero_solver_output_compatibility",
+        "dtype": "torch.float64",
+        "batch": [
+          2,
+          3
+        ],
+        "seed": 15,
+        "all_four_candidates_bitwise_equal": true,
+        "all_solver_coefficient_gradients_bitwise_equal": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          1
+        ],
+        "points": 32,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float32",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": false,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_nonzero_control",
+        "dtype": "torch.float64",
+        "batch": [
+          2
+        ],
+        "points": 128,
+        "refine": true,
+        "main_beta_solver": "gelsd",
+        "all_beta_coefficients_nonzero": true,
+        "poses_bitwise_equal": true,
+        "point_pixel_intrinsics_gradients_close": true
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 0.0000046193599700927734,
+          "translation_error": 0.0000057220458984375
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 0.0000046193599700927734,
+          "translation_error": 0.0000057220458984375
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 9.760260581970215e-7,
+          "translation_error": 0.000006198883056640625
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float32",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 9.760260581970215e-7,
+          "translation_error": 0.000006198883056640625
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.6381674622655282e-14,
+          "translation_error": 4.1744385725905886e-14
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": false,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 2.6381674622655282e-14,
+          "translation_error": 4.1744385725905886e-14
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 8.576472865229334e-15,
+          "translation_error": 2.3092638912203256e-14
+        }
+      },
+      {
+        "kind": "public_call_signed_zero_replay",
+        "dtype": "torch.float64",
+        "refine": true,
+        "zero": 0,
+        "main_beta_solver": "gelsd",
+        "injected_first_coefficient": true,
+        "baseline": {
+          "success": false,
+          "error": "linalg.svd: (Batch element 1): The algorithm failed to converge because the input matrix contained non-finite values."
+        },
+        "candidate": {
+          "success": true,
+          "rotation_error": 8.576472865229334e-15,
+          "translation_error": 2.3092638912203256e-14
+        }
+      }
+    ]
+  },
+  "limits": [
+    "Camera regression explicitly injects the observed first coefficient zero and configures existing gelsd for reproducibility; no natural-frequency claim.",
+    "True all-zero estimates remain degenerate. No finite-gradient promise at sqrt(abs(S)) zero boundary.",
+    "Legacy NumPy already reconstructs full-four coefficient order correctly; restoring that ordering is excluded as previously implemented, not counted or included in this patch.",
+    "The first independent 44-case review established zero-sign magnitude retention using historical slot mapping; corrected review explicitly does not certify full-four mathematical ordering."
+  ],
+  "history": {
+    "prior_pr_heads": 343,
+    "prior_account_branches": 69,
+    "source_commits": 135,
+    "distinct_sources": 82,
+    "all_retain_zeroing_sign": true,
+    "previous_archive_commit": "da555b597df94de3f03edc07dd156e9a80549d30"
+  }
+}

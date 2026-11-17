@@ -1,0 +1,76 @@
+name: Validate EPnP zero-sign beta reconstruction
+on:
+  push:
+    branches: [validation/pypose-epnp-zero-sign-20261117]
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - torch: '2.5.1'
+            vision: '0.20.1'
+          - torch: '2.6.0'
+            vision: '0.21.0'
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONPATH: .
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 3
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU dependencies
+        run: |
+          python -m pip install numpy==1.26.4 pytest
+          python -m pip install torch==${{ matrix.torch }} torchvision==${{ matrix.vision }} --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e . --no-deps
+      - name: Check exact production source
+        run: |
+          git diff --exit-code 3706c43d4a345baf8206499465801c4ac7051a71 HEAD -- pypose tests
+          python -c "import torch,pypose; print(torch.__version__, pypose.__file__)"
+      - name: Reproduce exact baseline failures
+        run: |
+          git show 298e9f0862cb228b0e8851b2616e682ccdca6a32:pypose/module/pnp.py > pypose/module/pnp.py
+          python - <<'PY'
+          import subprocess, sys, xml.etree.ElementTree as ET
+          result = subprocess.run([sys.executable, '-m', 'pytest', '-q', 'tests/module/test_epnp_betas.py', '--junitxml=baseline-betas.xml'])
+          assert result.returncode == 1, result.returncode
+          cases = ET.parse('baseline-betas.xml').getroot().findall('.//testcase')
+          failures = [case for case in cases if case.find('failure') is not None]
+          errors = [case for case in cases if case.find('error') is not None]
+          assert len(cases) == 88 and len(failures) == 76 and not errors
+          assert sum('zero_sign_preserves' in case.attrib['name'] for case in failures) == 72
+          assert sum('camera_pose_with_replayed' in case.attrib['name'] for case in failures) == 4
+          print('Verified original source: 76 expected regression failures, 12 controls pass, no errors.')
+          PY
+      - name: Restore candidate and run full repository suite
+        run: |
+          git show 3706c43d4a345baf8206499465801c4ac7051a71:pypose/module/pnp.py > pypose/module/pnp.py
+          git diff --exit-code 3706c43d4a345baf8206499465801c4ac7051a71 -- pypose tests
+          python - <<'PY'
+          import random, numpy, torch, pytest
+          random.seed(0); numpy.random.seed(0); torch.manual_seed(0)
+          raise SystemExit(pytest.main(['-q']))
+          PY
+      - name: Validate nonzero compatibility and public zero-anchor replay
+        run: |
+          git show 298e9f0862cb228b0e8851b2616e682ccdca6a32:pypose/module/pnp.py > "$RUNNER_TEMP/base_pnp.py"
+          python .validation/compare_epnp_zero_sign.py "$RUNNER_TEMP/base_pnp.py"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: epnp-zero-sign-${{ matrix.torch }}
+          path: |
+            baseline-betas.xml
+            epnp-zero-sign-results.json
