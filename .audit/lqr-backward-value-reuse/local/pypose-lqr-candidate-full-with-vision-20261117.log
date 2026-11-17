@@ -1,0 +1,34 @@
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 48%]
+...................................................s.s.s.s.s.s.s.s.s.s.s [ 64%]
+.s....ss.s.s............................................................ [ 80%]
+...................................................................ss... [ 97%]
+.............                                                            [100%]
+=============================== warnings summary ===============================
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_batched_se3_liegroup_optimizer_step
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_batched_se3_no_padded_zeros
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_frozen_parameters_excluded
+  /workspace/scratch/4bed741d4966/worktrees/pypose-candidate/pypose/lietensor/lietensor.py:966: UserWarning: Tensor Shape Invalid by calling <method 'reshape' of 'torch._C.TensorBase' objects>, go to https://pypose.org/docs/main/generated/pypose.LieTensor
+    warnings.warn('Tensor Shape Invalid by calling {}, ' \
+
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_batched_se3_liegroup_optimizer_step
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_frozen_parameters_excluded
+  /workspace/scratch/4bed741d4966/worktrees/pypose-candidate/pypose/lietensor/lietensor.py:966: UserWarning: Tensor Shape Invalid by calling <built-in method cat of type object at 0x7febc1792cc0>, go to https://pypose.org/docs/main/generated/pypose.LieTensor
+    warnings.warn('Tensor Shape Invalid by calling {}, ' \
+
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_batched_se3_liegroup_optimizer_step
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_frozen_parameters_excluded
+  /workspace/scratch/4bed741d4966/worktrees/pypose-candidate/pypose/lietensor/lietensor.py:966: UserWarning: Tensor Shape Invalid by calling <method 'view' of 'torch._C.TensorBase' objects>, go to https://pypose.org/docs/main/generated/pypose.LieTensor
+    warnings.warn('Tensor Shape Invalid by calling {}, ' \
+
+tests/optim/test_optimizer.py::TestLieGroupGradientDimension::test_batched_se3_no_padded_zeros
+  /workspace/scratch/4bed741d4966/worktrees/pypose-candidate/pypose/lietensor/lietensor.py:966: UserWarning: Tensor Shape Invalid by calling <slot wrapper '__getitem__' of 'torch._C.TensorBase' objects>, go to https://pypose.org/docs/main/generated/pypose.LieTensor
+    warnings.warn('Tensor Shape Invalid by calling {}, ' \
+
+tests/optim/test_solver.py::TestSolver::test_cg_csr
+  /workspace/scratch/4bed741d4966/worktrees/pypose-candidate/tests/optim/test_solver.py:40: UserWarning: Sparse CSR tensor support is in beta state. If you miss a functionality in the sparse tensor support, please submit a feature request to https://github.com/pytorch/pytorch/issues. (Triggered internally at /pytorch/aten/src/ATen/SparseCsrTensorImpl.cpp:53.)
+    A_csr = A.to_sparse_csr()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+427 passed, 18 skipped, 9 warnings in 84.57s (0:01:24)

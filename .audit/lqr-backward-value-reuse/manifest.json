@@ -1,0 +1,127 @@
+{
+  "production_commit": "878e15c29bd3a92d4dfca635f1cf2a31ca473e18",
+  "validation_commit": "e781d72a87b53fba6e95bfa4e4b89190e8a69cb3",
+  "pr": "https://github.com/pypose/pypose/pull/543",
+  "files": [
+    {
+      "path": ".audit/lqr-backward-value-reuse/compare_lqr_backward.py",
+      "bytes": 5188,
+      "sha256": "9320863ee9db93a17557f5a914682c30083bb3c8d76d66d079bddae9765ca27e",
+      "git_blob": "99294e4708030cd1dc8b208cf97ab7e364fe9029"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/complete-lqr-source-history.json.gz",
+      "bytes": 98691,
+      "sha256": "69a774ccae453ce4a6144a37ee9e200356f7df32f78f125a37ae0e378dd74196",
+      "git_blob": "580f4328dc6f8c2afa8727331cd0364260fa9b6d"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/history-summary.json",
+      "bytes": 386,
+      "sha256": "d487129108efec97be7bf4cb1486db677b94bee23d896d101ad11350409882fc",
+      "git_blob": "13077e78f5f2e661841bdec08cd44f11331369e1"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/submission-and-validation.json",
+      "bytes": 54118,
+      "sha256": "b3e7981bee8113b1c4e82d7087be97793f52a781fd85316adbd9d369e3793be1",
+      "git_blob": "00088bceff25f9bab065020b1c2d48a0ecdb27c6"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/torch-2.5.1-job-133874952022.log",
+      "bytes": 50141,
+      "sha256": "87de9dc4bad3ecf99935cc9e5f89478dbf9fcf82b8826d8ea558d5f34914428b",
+      "git_blob": "922d2d249c20d1feb78c56bb11022b1db0938f15"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/torch-2.6.0-job-133874952339.log",
+      "bytes": 47663,
+      "sha256": "586e25d5fa59f19d1828e7e3c13acfc0d053ca8510f5f16719eb8ddae8f64ae6",
+      "git_blob": "08da93f07cd4366f60bb1aadfa3c608503a65d1e"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/validate-lqr-backward.yml",
+      "bytes": 2460,
+      "sha256": "3d825f4d96ef310bb95281e6ce21734010e10851639a4ddb20cf3682d8855c8e",
+      "git_blob": "2f9ee5cb4c18624f680b0f2be80168a6c9fed35e"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-source-audit-20261117.json",
+      "bytes": 19228,
+      "sha256": "84c63b79b34b812650254d1df132d5b1fa800f206d15f9d45c4ad4d6d0c9ea32",
+      "git_blob": "827d5fbbd937c8902eeb73d64ce1ace8390a7208"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-strategy-history-20261117.json",
+      "bytes": 12110,
+      "sha256": "9e748336a7ea716810082e9adeecd570815226103dbd985bdea5591b0892d049",
+      "git_blob": "cee0508c66831fb96ec11b4a36d7bfdfca4d9372"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-history-refs-20261117.txt",
+      "bytes": 31265,
+      "sha256": "fbe76ab9d0f67a143e810db2995c8b34663ade5fe25475cb07f182f78d2b5b65",
+      "git_blob": "2fb53079b2427db77de9547cdf14e93d00329513"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-pr-refs-20261117.log",
+      "bytes": 20207,
+      "sha256": "3039909c10709d7d602752295bc2eaa74092de9662d88d258364d73d458b34a5",
+      "git_blob": "fd34a3ca405daee3d923253c35b896cbffe01d66"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-fork-refs-20261117.log",
+      "bytes": 8275,
+      "sha256": "ef13452656052f17647a4488a5c498f0bc0cb0575d4bfe5265f3fff0ffedf540",
+      "git_blob": "8f268702b454f9f85973acef42dd7c38e571b8f5"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-dense-baseline-20261117.log",
+      "bytes": 99,
+      "sha256": "f3838ba820c29fd860d56463c98a215793fbf7314ec2b71cad363a58161d17a8",
+      "git_blob": "9d5eb6ca26761d9c93a581cbb2b46348d381cfa3"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-candidate-targeted-20261117.log",
+      "bytes": 99,
+      "sha256": "2e0f60303807d41f8d0fa54e6c4b83fd8c328bad093adc193a394003ad650b70",
+      "git_blob": "393e63bab844de96cbea3e054f719a3bdf64c819"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-candidate-full-20261117.log",
+      "bytes": 3181,
+      "sha256": "d6efd2eaad65a260de0593baa3da9b061dbda53ad4d7884978570af2a955f693",
+      "git_blob": "8fee4628fcc222d4951cf8a9dc52ae6c3f9946e0"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-candidate-full-with-vision-20261117.log",
+      "bytes": 3268,
+      "sha256": "20b5f6b5c8eacddb8e4939d2eec5fa7523af464c8524c554455027f3606ed723",
+      "git_blob": "ea0d44cdb3555d5a4388e70137c57b5a837ed02f"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-projection-validation-20261117.json",
+      "bytes": 10975,
+      "sha256": "d08e0aab037e29f0c874eea6b81e7b8463b66fcdb09243adf57c107ebe140a19",
+      "git_blob": "0a6d966fe1d9a4c26104de510405948e3fceb369"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/local/pypose-lqr-backward-final-probe-20261117.json",
+      "bytes": 3199,
+      "sha256": "d0874157a5dc1781a877fdf6dcceaf94345fce07ca22fc39145f21dac5c1b0e6",
+      "git_blob": "595672bdbcd8171d7bd3af426930eef9e98b5b3d"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/independent/report.json",
+      "bytes": 5818,
+      "sha256": "29c7f969ed80b8f0b74662efc99153cf19e75a82c2d681bbfbbfde132afc06cf",
+      "git_blob": "dc1ad9e03507329fdc7a7f519dcc02b1e18186d9"
+    },
+    {
+      "path": ".audit/lqr-backward-value-reuse/independent/probe.py",
+      "bytes": 4211,
+      "sha256": "967c50568fda2723a554f3e5d7d6b152864af27e4d1959afb4a13e56dac74808",
+      "git_blob": "c6402a0e3c94aa0a13347c81becd01052c1cc456"
+    }
+  ]
+}

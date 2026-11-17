@@ -1,0 +1,1471 @@
+{
+  "pull_request": {
+    "url": "https://api.github.com/repos/pypose/pypose/pulls/543",
+    "id": 5352344590,
+    "node_id": "PR_kwDOGXS1m88AAAABPwZMDg",
+    "html_url": "https://github.com/pypose/pypose/pull/543",
+    "diff_url": "https://github.com/pypose/pypose/pull/543.diff",
+    "patch_url": "https://github.com/pypose/pypose/pull/543.patch",
+    "issue_url": "https://api.github.com/repos/pypose/pypose/issues/543",
+    "commits_url": "https://api.github.com/repos/pypose/pypose/pulls/543/commits",
+    "review_comments_url": "https://api.github.com/repos/pypose/pypose/pulls/543/comments",
+    "review_comment_url": "https://api.github.com/repos/pypose/pypose/pulls/comments{/number}",
+    "comments_url": "https://api.github.com/repos/pypose/pypose/issues/543/comments",
+    "statuses_url": "https://api.github.com/repos/pypose/pypose/statuses/878e15c29bd3a92d4dfca635f1cf2a31ca473e18",
+    "number": 543,
+    "state": "open",
+    "locked": false,
+    "title": "Reuse value-function work in LQR backward recursion",
+    "user": {
+      "login": "Afloat16",
+      "id": 132809511,
+      "node_id": "U_kgDOB-qDJw",
+      "avatar_url": "https://avatars.githubusercontent.com/u/132809511?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/Afloat16",
+      "html_url": "https://github.com/Afloat16",
+      "followers_url": "https://api.github.com/users/Afloat16/followers",
+      "following_url": "https://api.github.com/users/Afloat16/following{/other_user}",
+      "gists_url": "https://api.github.com/users/Afloat16/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/Afloat16/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/Afloat16/subscriptions",
+      "organizations_url": "https://api.github.com/users/Afloat16/orgs",
+      "repos_url": "https://api.github.com/users/Afloat16/repos",
+      "events_url": "https://api.github.com/users/Afloat16/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/Afloat16/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "body": "## Problem\n\nThe LQR backward recursion evaluates `Kt.mT @ Quu` twice for each value update. It also constructs `V` and `v` at `t == 0`, although there is no remaining backward step to consume them.\n\n## Change\n\nReuse the projection within each required value update and skip the unused final update. The two Cholesky solves and the Riccati expressions retain their existing evaluation order. This changes only backward-pass work; the forward-rollout change in #541 remains separate.\n\nFixes #542.\n\n## Validation\n\n- Add 27 independent dense-QP comparisons: float32/float64, batch sizes 1 and 3, horizons 1/2/5, zero/nonzero initial control trajectories, plus gradients through a positive-definite cost factor, linear costs and initial state. These also pass on unchanged main.\n- Full repository suite: **427 passed, 18 skipped** on each of CPU Torch **2.5.1** and **2.6.0**.\n- Eight additional public-call dtype/shape comparisons per Torch version return bit-identical states, controls and costs. Raw quadratic-cost, linear-cost and initial-state gradients agree within dtype tolerances.\n- An independent 16-case CPU comparison also covers gradients through dynamics and warm starts, and Hessian-vector products. Gradients are tolerance-equivalent, not necessarily bit-identical.\n\nThe [two-version validation run](https://github.com/Afloat16/pypose/actions/runs/44034793759) checks the exact production source at `878e15c29bd3a92d4dfca635f1cf2a31ca473e18`, runs the suite, and records all paired timings and profiler results.\n\n## Measured work reduction\n\nCPU profiler counts for the complete public LQR call:\n\n| Batch / horizon / state / control dimensions | Before `aten::bmm` | After |\n| --- | ---: | ---: |\n| 1 / 1 / 3 / 2 | 16 | 8 |\n| 3 / 2 / 3 / 2 | 38 | 29 |\n| 8 / 32 / 12 / 6 | 698 | 659 |\n| 4 / 24 / 64 / 32 | 522 | 491 |\n\nOn the single-thread Ubuntu runners, seven alternating baseline/candidate timing rounds give median public-call latency reductions of **1.9–4.2%** for the two longer-horizon workloads, **8.6–9.2%** for horizon two, and **17.7–18.5%** for horizon one, across float32/float64 and both Torch versions. These are measurements for those CPU workloads, not a GPU or general latency guarantee.\n\nThe history check covers 343 upstream PR heads, 69 existing account branch heads and all 116 distinct versions of the LQR source across 203 commits; no equivalent value-update reuse or final-update omission was found.\n",
+    "labels": [],
+    "milestone": null,
+    "active_lock_reason": null,
+    "created_at": "2026-11-17T06:58:12Z",
+    "updated_at": "2026-11-17T06:58:12Z",
+    "closed_at": null,
+    "merged_at": null,
+    "merge_commit_sha": "6f87eabf7952c2b57935f030bf77fced1759d27d",
+    "assignee": null,
+    "assignees": [],
+    "requested_reviewers": [],
+    "requested_teams": [],
+    "head": {
+      "label": "Afloat16:Afloat16/lqr-backward-value-reuse-20261117",
+      "ref": "Afloat16/lqr-backward-value-reuse-20261117",
+      "repo": {
+        "id": 1408259171,
+        "node_id": "R_kgDOU_BUYw",
+        "name": "pypose",
+        "full_name": "Afloat16/pypose",
+        "owner": {
+          "login": "Afloat16",
+          "id": 132809511,
+          "node_id": "U_kgDOB-qDJw",
+          "avatar_url": "https://avatars.githubusercontent.com/u/132809511?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/Afloat16",
+          "html_url": "https://github.com/Afloat16",
+          "followers_url": "https://api.github.com/users/Afloat16/followers",
+          "following_url": "https://api.github.com/users/Afloat16/following{/other_user}",
+          "gists_url": "https://api.github.com/users/Afloat16/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/Afloat16/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/Afloat16/subscriptions",
+          "organizations_url": "https://api.github.com/users/Afloat16/orgs",
+          "repos_url": "https://api.github.com/users/Afloat16/repos",
+          "events_url": "https://api.github.com/users/Afloat16/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/Afloat16/received_events",
+          "type": "User",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "private": false,
+        "fork": true,
+        "archived": false,
+        "disabled": false,
+        "description": "A library for differentiable robotics on manifolds.",
+        "homepage": "https://pypose.org",
+        "language": null,
+        "visibility": "public",
+        "is_template": false,
+        "topics": [],
+        "forks_count": 0,
+        "forks": 0,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "watchers": 0,
+        "open_issues_count": 0,
+        "open_issues": 0,
+        "size": 9118,
+        "default_branch": "main",
+        "has_issues": false,
+        "has_projects": true,
+        "has_wiki": true,
+        "has_pages": false,
+        "has_downloads": false,
+        "has_discussions": false,
+        "has_pull_requests": true,
+        "pushed_at": "2026-11-17T06:55:25Z",
+        "created_at": "2026-10-07T04:50:27Z",
+        "updated_at": "2026-10-07T04:50:27Z",
+        "allow_forking": true,
+        "web_commit_signoff_required": true,
+        "pull_request_creation_policy": "all",
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "spdx_id": "Apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "url": "https://api.github.com/repos/Afloat16/pypose",
+        "html_url": "https://github.com/Afloat16/pypose",
+        "archive_url": "https://api.github.com/repos/Afloat16/pypose/{archive_format}{/ref}",
+        "assignees_url": "https://api.github.com/repos/Afloat16/pypose/assignees{/user}",
+        "blobs_url": "https://api.github.com/repos/Afloat16/pypose/git/blobs{/sha}",
+        "branches_url": "https://api.github.com/repos/Afloat16/pypose/branches{/branch}",
+        "collaborators_url": "https://api.github.com/repos/Afloat16/pypose/collaborators{/collaborator}",
+        "comments_url": "https://api.github.com/repos/Afloat16/pypose/comments{/number}",
+        "commits_url": "https://api.github.com/repos/Afloat16/pypose/commits{/sha}",
+        "compare_url": "https://api.github.com/repos/Afloat16/pypose/compare/{base}...{head}",
+        "contents_url": "https://api.github.com/repos/Afloat16/pypose/contents/{+path}",
+        "contributors_url": "https://api.github.com/repos/Afloat16/pypose/contributors",
+        "deployments_url": "https://api.github.com/repos/Afloat16/pypose/deployments",
+        "downloads_url": "https://api.github.com/repos/Afloat16/pypose/downloads",
+        "events_url": "https://api.github.com/repos/Afloat16/pypose/events",
+        "forks_url": "https://api.github.com/repos/Afloat16/pypose/forks",
+        "git_commits_url": "https://api.github.com/repos/Afloat16/pypose/git/commits{/sha}",
+        "git_refs_url": "https://api.github.com/repos/Afloat16/pypose/git/refs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/Afloat16/pypose/git/tags{/sha}",
+        "git_url": "git://github.com/Afloat16/pypose.git",
+        "issue_comment_url": "https://api.github.com/repos/Afloat16/pypose/issues/comments{/number}",
+        "issue_events_url": "https://api.github.com/repos/Afloat16/pypose/issues/events{/number}",
+        "issues_url": "https://api.github.com/repos/Afloat16/pypose/issues{/number}",
+        "keys_url": "https://api.github.com/repos/Afloat16/pypose/keys{/key_id}",
+        "labels_url": "https://api.github.com/repos/Afloat16/pypose/labels{/name}",
+        "languages_url": "https://api.github.com/repos/Afloat16/pypose/languages",
+        "merges_url": "https://api.github.com/repos/Afloat16/pypose/merges",
+        "milestones_url": "https://api.github.com/repos/Afloat16/pypose/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/Afloat16/pypose/notifications{?since,all,participating}",
+        "pulls_url": "https://api.github.com/repos/Afloat16/pypose/pulls{/number}",
+        "releases_url": "https://api.github.com/repos/Afloat16/pypose/releases{/id}",
+        "ssh_url": "git@github.com:Afloat16/pypose.git",
+        "stargazers_url": "https://api.github.com/repos/Afloat16/pypose/stargazers",
+        "statuses_url": "https://api.github.com/repos/Afloat16/pypose/statuses/{sha}",
+        "subscribers_url": "https://api.github.com/repos/Afloat16/pypose/subscribers",
+        "subscription_url": "https://api.github.com/repos/Afloat16/pypose/subscription",
+        "tags_url": "https://api.github.com/repos/Afloat16/pypose/tags",
+        "teams_url": "https://api.github.com/repos/Afloat16/pypose/teams",
+        "trees_url": "https://api.github.com/repos/Afloat16/pypose/git/trees{/sha}",
+        "clone_url": "https://github.com/Afloat16/pypose.git",
+        "mirror_url": null,
+        "hooks_url": "https://api.github.com/repos/Afloat16/pypose/hooks",
+        "svn_url": "https://github.com/Afloat16/pypose"
+      },
+      "sha": "878e15c29bd3a92d4dfca635f1cf2a31ca473e18",
+      "user": {
+        "login": "Afloat16",
+        "id": 132809511,
+        "node_id": "U_kgDOB-qDJw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/132809511?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/Afloat16",
+        "html_url": "https://github.com/Afloat16",
+        "followers_url": "https://api.github.com/users/Afloat16/followers",
+        "following_url": "https://api.github.com/users/Afloat16/following{/other_user}",
+        "gists_url": "https://api.github.com/users/Afloat16/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/Afloat16/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/Afloat16/subscriptions",
+        "organizations_url": "https://api.github.com/users/Afloat16/orgs",
+        "repos_url": "https://api.github.com/users/Afloat16/repos",
+        "events_url": "https://api.github.com/users/Afloat16/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/Afloat16/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      }
+    },
+    "base": {
+      "label": "pypose:main",
+      "ref": "main",
+      "repo": {
+        "id": 427079067,
+        "node_id": "R_kgDOGXS1mw",
+        "name": "pypose",
+        "full_name": "pypose/pypose",
+        "owner": {
+          "login": "pypose",
+          "id": 92556637,
+          "node_id": "O_kgDOBYRNXQ",
+          "avatar_url": "https://avatars.githubusercontent.com/u/92556637?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/pypose",
+          "html_url": "https://github.com/pypose",
+          "followers_url": "https://api.github.com/users/pypose/followers",
+          "following_url": "https://api.github.com/users/pypose/following{/other_user}",
+          "gists_url": "https://api.github.com/users/pypose/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/pypose/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/pypose/subscriptions",
+          "organizations_url": "https://api.github.com/users/pypose/orgs",
+          "repos_url": "https://api.github.com/users/pypose/repos",
+          "events_url": "https://api.github.com/users/pypose/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/pypose/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "private": false,
+        "fork": false,
+        "archived": false,
+        "disabled": false,
+        "description": "A library for differentiable robotics on manifolds.",
+        "homepage": "https://pypose.org",
+        "language": "Python",
+        "visibility": "public",
+        "is_template": false,
+        "topics": [
+          "autonomous-robots",
+          "computer-graphics",
+          "control",
+          "deep-learning",
+          "geometric-deep-learning",
+          "kalman-filter",
+          "learning",
+          "lie-group",
+          "optimization",
+          "physics",
+          "planning",
+          "pose-estimation",
+          "pose-graph-optimization",
+          "python",
+          "pytorch",
+          "robotics",
+          "slam"
+        ],
+        "forks_count": 139,
+        "forks": 139,
+        "stargazers_count": 1621,
+        "watchers_count": 1621,
+        "watchers": 1621,
+        "open_issues_count": 140,
+        "open_issues": 140,
+        "size": 10260,
+        "default_branch": "main",
+        "has_issues": true,
+        "has_projects": true,
+        "has_wiki": true,
+        "has_pages": true,
+        "has_downloads": false,
+        "has_discussions": true,
+        "has_pull_requests": true,
+        "pushed_at": "2026-11-06T04:16:42Z",
+        "created_at": "2021-11-11T17:02:08Z",
+        "updated_at": "2026-11-16T04:09:25Z",
+        "allow_forking": true,
+        "web_commit_signoff_required": true,
+        "pull_request_creation_policy": "all",
+        "license": {
+          "key": "apache-2.0",
+          "name": "Apache License 2.0",
+          "url": "https://api.github.com/licenses/apache-2.0",
+          "spdx_id": "Apache-2.0",
+          "node_id": "MDc6TGljZW5zZTI="
+        },
+        "url": "https://api.github.com/repos/pypose/pypose",
+        "html_url": "https://github.com/pypose/pypose",
+        "archive_url": "https://api.github.com/repos/pypose/pypose/{archive_format}{/ref}",
+        "assignees_url": "https://api.github.com/repos/pypose/pypose/assignees{/user}",
+        "blobs_url": "https://api.github.com/repos/pypose/pypose/git/blobs{/sha}",
+        "branches_url": "https://api.github.com/repos/pypose/pypose/branches{/branch}",
+        "collaborators_url": "https://api.github.com/repos/pypose/pypose/collaborators{/collaborator}",
+        "comments_url": "https://api.github.com/repos/pypose/pypose/comments{/number}",
+        "commits_url": "https://api.github.com/repos/pypose/pypose/commits{/sha}",
+        "compare_url": "https://api.github.com/repos/pypose/pypose/compare/{base}...{head}",
+        "contents_url": "https://api.github.com/repos/pypose/pypose/contents/{+path}",
+        "contributors_url": "https://api.github.com/repos/pypose/pypose/contributors",
+        "deployments_url": "https://api.github.com/repos/pypose/pypose/deployments",
+        "downloads_url": "https://api.github.com/repos/pypose/pypose/downloads",
+        "events_url": "https://api.github.com/repos/pypose/pypose/events",
+        "forks_url": "https://api.github.com/repos/pypose/pypose/forks",
+        "git_commits_url": "https://api.github.com/repos/pypose/pypose/git/commits{/sha}",
+        "git_refs_url": "https://api.github.com/repos/pypose/pypose/git/refs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/pypose/pypose/git/tags{/sha}",
+        "git_url": "git://github.com/pypose/pypose.git",
+        "issue_comment_url": "https://api.github.com/repos/pypose/pypose/issues/comments{/number}",
+        "issue_events_url": "https://api.github.com/repos/pypose/pypose/issues/events{/number}",
+        "issues_url": "https://api.github.com/repos/pypose/pypose/issues{/number}",
+        "keys_url": "https://api.github.com/repos/pypose/pypose/keys{/key_id}",
+        "labels_url": "https://api.github.com/repos/pypose/pypose/labels{/name}",
+        "languages_url": "https://api.github.com/repos/pypose/pypose/languages",
+        "merges_url": "https://api.github.com/repos/pypose/pypose/merges",
+        "milestones_url": "https://api.github.com/repos/pypose/pypose/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/pypose/pypose/notifications{?since,all,participating}",
+        "pulls_url": "https://api.github.com/repos/pypose/pypose/pulls{/number}",
+        "releases_url": "https://api.github.com/repos/pypose/pypose/releases{/id}",
+        "ssh_url": "git@github.com:pypose/pypose.git",
+        "stargazers_url": "https://api.github.com/repos/pypose/pypose/stargazers",
+        "statuses_url": "https://api.github.com/repos/pypose/pypose/statuses/{sha}",
+        "subscribers_url": "https://api.github.com/repos/pypose/pypose/subscribers",
+        "subscription_url": "https://api.github.com/repos/pypose/pypose/subscription",
+        "tags_url": "https://api.github.com/repos/pypose/pypose/tags",
+        "teams_url": "https://api.github.com/repos/pypose/pypose/teams",
+        "trees_url": "https://api.github.com/repos/pypose/pypose/git/trees{/sha}",
+        "clone_url": "https://github.com/pypose/pypose.git",
+        "mirror_url": null,
+        "hooks_url": "https://api.github.com/repos/pypose/pypose/hooks",
+        "svn_url": "https://github.com/pypose/pypose"
+      },
+      "sha": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+      "user": {
+        "login": "pypose",
+        "id": 92556637,
+        "node_id": "O_kgDOBYRNXQ",
+        "avatar_url": "https://avatars.githubusercontent.com/u/92556637?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/pypose",
+        "html_url": "https://github.com/pypose",
+        "followers_url": "https://api.github.com/users/pypose/followers",
+        "following_url": "https://api.github.com/users/pypose/following{/other_user}",
+        "gists_url": "https://api.github.com/users/pypose/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/pypose/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/pypose/subscriptions",
+        "organizations_url": "https://api.github.com/users/pypose/orgs",
+        "repos_url": "https://api.github.com/users/pypose/repos",
+        "events_url": "https://api.github.com/users/pypose/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/pypose/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      }
+    },
+    "_links": {
+      "comments": {
+        "href": "https://api.github.com/repos/pypose/pypose/issues/543/comments"
+      },
+      "commits": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/543/commits"
+      },
+      "statuses": {
+        "href": "https://api.github.com/repos/pypose/pypose/statuses/878e15c29bd3a92d4dfca635f1cf2a31ca473e18"
+      },
+      "html": {
+        "href": "https://github.com/pypose/pypose/pull/543"
+      },
+      "issue": {
+        "href": "https://api.github.com/repos/pypose/pypose/issues/543"
+      },
+      "review_comments": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/543/comments"
+      },
+      "review_comment": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/comments{/number}"
+      },
+      "self": {
+        "href": "https://api.github.com/repos/pypose/pypose/pulls/543"
+      }
+    },
+    "author_association": "CONTRIBUTOR",
+    "auto_merge": null,
+    "draft": false,
+    "merged": false,
+    "mergeable": true,
+    "rebaseable": true,
+    "mergeable_state": "blocked",
+    "merged_by": null,
+    "comments": 0,
+    "review_comments": 0,
+    "maintainer_can_modify": false,
+    "commits": 1,
+    "additions": 93,
+    "deletions": 2,
+    "changed_files": 2
+  },
+  "validation_run": "https://github.com/Afloat16/pypose/actions/runs/44034793759",
+  "production_commit": "878e15c29bd3a92d4dfca635f1cf2a31ca473e18",
+  "validation_commit": "e781d72a87b53fba6e95bfa4e4b89190e8a69cb3",
+  "jobs": {
+    "total_count": 2,
+    "jobs": [
+      {
+        "id": 133874952022,
+        "run_id": 44034793759,
+        "workflow_name": "Validate LQR backward value reuse",
+        "head_branch": "validation/pypose-lqr-backward-value-reuse-20261117",
+        "run_url": "https://api.github.com/repos/Afloat16/pypose/actions/runs/44034793759",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOU_BUY88AAAAfK5GnVg",
+        "head_sha": "e781d72a87b53fba6e95bfa4e4b89190e8a69cb3",
+        "url": "https://api.github.com/repos/Afloat16/pypose/actions/jobs/133874952022",
+        "html_url": "https://github.com/Afloat16/pypose/actions/runs/44034793759/job/133874952022",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-17T06:55:28Z",
+        "started_at": "2026-11-17T06:55:30Z",
+        "completed_at": "2026-11-17T06:57:01Z",
+        "name": "native (2.5.1, 0.20.1)",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-17T06:55:31Z",
+            "completed_at": "2026-11-17T06:55:34Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-17T06:55:34Z",
+            "completed_at": "2026-11-17T06:55:39Z"
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-17T06:55:39Z",
+            "completed_at": "2026-11-17T06:55:39Z"
+          },
+          {
+            "name": "Install CPU dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-17T06:55:39Z",
+            "completed_at": "2026-11-17T06:56:07Z"
+          },
+          {
+            "name": "Check exact production code and tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-17T06:56:07Z",
+            "completed_at": "2026-11-17T06:56:10Z"
+          },
+          {
+            "name": "Validate independent dense QP oracle on baseline",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-17T06:56:10Z",
+            "completed_at": "2026-11-17T06:56:11Z"
+          },
+          {
+            "name": "Restore candidate and run full repository suite",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-17T06:56:11Z",
+            "completed_at": "2026-11-17T06:56:24Z"
+          },
+          {
+            "name": "Measure public outputs gradients operator work and timings",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-17T06:56:24Z",
+            "completed_at": "2026-11-17T06:56:56Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-17T06:56:56Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-17T06:56:58Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-17T06:56:58Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-17T06:56:58Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/Afloat16/pypose/check-runs/133874952022",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000010870,
+        "runner_name": "GitHub Actions 1000010870",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      },
+      {
+        "id": 133874952339,
+        "run_id": 44034793759,
+        "workflow_name": "Validate LQR backward value reuse",
+        "head_branch": "validation/pypose-lqr-backward-value-reuse-20261117",
+        "run_url": "https://api.github.com/repos/Afloat16/pypose/actions/runs/44034793759",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOU_BUY88AAAAfK5Gokw",
+        "head_sha": "e781d72a87b53fba6e95bfa4e4b89190e8a69cb3",
+        "url": "https://api.github.com/repos/Afloat16/pypose/actions/jobs/133874952339",
+        "html_url": "https://github.com/Afloat16/pypose/actions/runs/44034793759/job/133874952339",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-17T06:55:28Z",
+        "started_at": "2026-11-17T06:55:30Z",
+        "completed_at": "2026-11-17T06:57:01Z",
+        "name": "native (2.6.0, 0.21.0)",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-17T06:55:31Z",
+            "completed_at": "2026-11-17T06:55:32Z"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-17T06:55:32Z",
+            "completed_at": "2026-11-17T06:55:33Z"
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-17T06:55:33Z",
+            "completed_at": "2026-11-17T06:55:33Z"
+          },
+          {
+            "name": "Install CPU dependencies",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-17T06:55:33Z",
+            "completed_at": "2026-11-17T06:56:01Z"
+          },
+          {
+            "name": "Check exact production code and tests",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-17T06:56:01Z",
+            "completed_at": "2026-11-17T06:56:03Z"
+          },
+          {
+            "name": "Validate independent dense QP oracle on baseline",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-17T06:56:03Z",
+            "completed_at": "2026-11-17T06:56:05Z"
+          },
+          {
+            "name": "Restore candidate and run full repository suite",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-17T06:56:05Z",
+            "completed_at": "2026-11-17T06:56:21Z"
+          },
+          {
+            "name": "Measure public outputs gradients operator work and timings",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-17T06:56:21Z",
+            "completed_at": "2026-11-17T06:56:56Z"
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-17T06:56:56Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-17T06:56:58Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-17T06:56:58Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-17T06:56:58Z",
+            "completed_at": "2026-11-17T06:56:58Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/Afloat16/pypose/check-runs/133874952339",
+        "labels": [
+          "ubuntu-24.04"
+        ],
+        "runner_id": 1000010871,
+        "runner_name": "GitHub Actions 1000010871",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "measurements": {
+    "2.5.1": [
+      {
+        "shape": [
+          1,
+          1,
+          3,
+          2
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 16,
+            "cumulative_positive_self_allocated_bytes": 868
+          },
+          "candidate": {
+            "bmm_count": 8,
+            "cumulative_positive_self_allocated_bytes": 531
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.00026433484999870415,
+            0.0002644345500002032,
+            0.0002641719999985526,
+            0.00026472584999908126,
+            0.00026465680000029577,
+            0.00026473755000040456,
+            0.0002644000000003643
+          ],
+          "candidate": [
+            0.00021734489999971628,
+            0.0002165655999988303,
+            0.00021621109999898637,
+            0.0002161964000009675,
+            0.00021669889999884618,
+            0.00021628789999965646,
+            0.00021870654999958105
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.8222332393960985,
+          0.8189761889989939,
+          0.8184482079863535,
+          0.8166803506409284,
+          0.8187921111364,
+          0.8169898829966733,
+          0.8271805975767008
+        ],
+        "paired_ratio_median": 0.8187921111364
+      },
+      {
+        "shape": [
+          1,
+          1,
+          3,
+          2
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 16,
+            "cumulative_positive_self_allocated_bytes": 1675
+          },
+          "candidate": {
+            "bmm_count": 8,
+            "cumulative_positive_self_allocated_bytes": 1071
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.0002627539999991768,
+            0.0002620266000008087,
+            0.0002623336999988624,
+            0.00026315945000021657,
+            0.00026285849999965196,
+            0.00026267979999943235,
+            0.0002618796999996675
+          ],
+          "candidate": [
+            0.0002150245499990433,
+            0.0002135018000004152,
+            0.0002143727499998249,
+            0.0002141925499984154,
+            0.00021422100000023647,
+            0.000214639799999361,
+            0.0002133752500000696
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.8183492924930428,
+          0.8148096414629518,
+          0.8171757955640261,
+          0.8139268796854497,
+          0.8149669879441604,
+          0.8171157431969449,
+          0.8147834673720052
+        ],
+        "paired_ratio_median": 0.8149669879441604
+      },
+      {
+        "shape": [
+          3,
+          2,
+          3,
+          2
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 38,
+            "cumulative_positive_self_allocated_bytes": 6294
+          },
+          "candidate": {
+            "bmm_count": 29,
+            "cumulative_positive_self_allocated_bytes": 5259
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.0005717927999995709,
+            0.0005739549999930205,
+            0.0005721950000008747,
+            0.0005736202000008461,
+            0.0005748729000004005,
+            0.0005780839999971477,
+            0.0005767474999998967
+          ],
+          "candidate": [
+            0.0005198344000007183,
+            0.0005192508999982692,
+            0.000522123799999008,
+            0.0005212056999994274,
+            0.0005227421999990156,
+            0.0005241869000002453,
+            0.00052311470000177
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.90913072008096,
+          0.9046892178038062,
+          0.9124927690703516,
+          0.9086250797978499,
+          0.9093178683473362,
+          0.9067659717321906,
+          0.9070081794925225
+        ],
+        "paired_ratio_median": 0.9086250797978499
+      },
+      {
+        "shape": [
+          3,
+          2,
+          3,
+          2
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 38,
+            "cumulative_positive_self_allocated_bytes": 12713
+          },
+          "candidate": {
+            "bmm_count": 29,
+            "cumulative_positive_self_allocated_bytes": 10470
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.0005683741499993289,
+            0.000568780999999774,
+            0.0005683001999997828,
+            0.0005771710000033181,
+            0.0005731820999983483,
+            0.0005708790000014119,
+            0.0005730690999996568
+          ],
+          "candidate": [
+            0.0005147801999981994,
+            0.0005157499000006283,
+            0.0005194434999992836,
+            0.0005186874999992596,
+            0.0005202488999998423,
+            0.0005210895999994136,
+            0.0005207430000098157
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9057065667022457,
+          0.9067635873927455,
+          0.9140301199955272,
+          0.8986721439508876,
+          0.9076502912448616,
+          0.9127846706537197,
+          0.9086914649736436
+        ],
+        "paired_ratio_median": 0.9076502912448616
+      },
+      {
+        "shape": [
+          8,
+          32,
+          12,
+          6
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 698,
+            "cumulative_positive_self_allocated_bytes": 2963215
+          },
+          "candidate": {
+            "bmm_count": 659,
+            "cumulative_positive_self_allocated_bytes": 2860796
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.010240642499994124,
+            0.01025021300000617,
+            0.010254415000005679,
+            0.010254706500006705,
+            0.010248819500006334,
+            0.010233128999999508,
+            0.010236990499990384
+          ],
+          "candidate": [
+            0.010042059999989306,
+            0.010035234499994772,
+            0.010064055999990273,
+            0.010045036499988669,
+            0.010051966999995443,
+            0.010036804499989671,
+            0.010048128499988707
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9806083944435193,
+          0.9790269236345364,
+          0.9814363861794847,
+          0.9795537785486207,
+          0.9807926659250102,
+          0.9808148123599492,
+          0.9815510232229038
+        ],
+        "paired_ratio_median": 0.9807926659250102
+      },
+      {
+        "shape": [
+          8,
+          32,
+          12,
+          6
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 698,
+            "cumulative_positive_self_allocated_bytes": 5921371
+          },
+          "candidate": {
+            "bmm_count": 659,
+            "cumulative_positive_self_allocated_bytes": 5713115
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.010642199000017172,
+            0.01037375899998949,
+            0.010358502000002545,
+            0.010387570000006008,
+            0.010381115000001273,
+            0.010413757999998552,
+            0.01039067450000175
+          ],
+          "candidate": [
+            0.010409049999992703,
+            0.010388353000010397,
+            0.010159022500005221,
+            0.010179237999977886,
+            0.01015597949999858,
+            0.010277412000007757,
+            0.01014382750000209
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9780920277825953,
+          1.0014068188803038,
+          0.980742437468538,
+          0.979944106270475,
+          0.9783129750510744,
+          0.9869071280520622,
+          0.9762434094148922
+        ],
+        "paired_ratio_median": 0.979944106270475
+      },
+      {
+        "shape": [
+          4,
+          24,
+          64,
+          32
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 522,
+            "cumulative_positive_self_allocated_bytes": 27193581
+          },
+          "candidate": {
+            "bmm_count": 491,
+            "cumulative_positive_self_allocated_bytes": 25967384
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.01258510499999943,
+            0.013209347999989518,
+            0.01315918200000965,
+            0.012659362500002658,
+            0.012607190999986528,
+            0.012597946999989063,
+            0.012603876500008937
+          ],
+          "candidate": [
+            0.012353265999990981,
+            0.012421619499988878,
+            0.012387454999995384,
+            0.012392875499998013,
+            0.012345734000007269,
+            0.012353893000010885,
+            0.012305346999994526
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9815783022860389,
+          0.9403658303194629,
+          0.9413544854069424,
+          0.9789494139215471,
+          0.9792612803296517,
+          0.9806274784313357,
+          0.976314469598762
+        ],
+        "paired_ratio_median": 0.9789494139215471
+      },
+      {
+        "shape": [
+          4,
+          24,
+          64,
+          32
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 522,
+            "cumulative_positive_self_allocated_bytes": 54333657
+          },
+          "candidate": {
+            "bmm_count": 491,
+            "cumulative_positive_self_allocated_bytes": 52030566
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.016034369999999853,
+            0.01596241100000384,
+            0.015960110999998278,
+            0.016239302999991878,
+            0.016201553000001923,
+            0.016211685999991232,
+            0.01621656199998256
+          ],
+          "candidate": [
+            0.015545744999997169,
+            0.015517017999997051,
+            0.015586636999984194,
+            0.01564729800000464,
+            0.015837899999979754,
+            0.01576689199998782,
+            0.015776990000006208
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9695263986048289,
+          0.9720973855386457,
+          0.9765995361802856,
+          0.9635449255434464,
+          0.9775544356752637,
+          0.972563371878554,
+          0.9728936379994215
+        ],
+        "paired_ratio_median": 0.972563371878554
+      }
+    ],
+    "2.6.0": [
+      {
+        "shape": [
+          1,
+          1,
+          3,
+          2
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 16,
+            "cumulative_positive_self_allocated_bytes": 871
+          },
+          "candidate": {
+            "bmm_count": 8,
+            "cumulative_positive_self_allocated_bytes": 532
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.0003534492,
+            0.0003560999999997705,
+            0.0003551671499998577,
+            0.00035384419999928696,
+            0.0003534596000008605,
+            0.0003600482499997781,
+            0.00035507194999979675
+          ],
+          "candidate": [
+            0.00029154209999973093,
+            0.0002931498499997076,
+            0.0002920578000001228,
+            0.0002916181999999878,
+            0.0002915145000002894,
+            0.0002917068000002132,
+            0.0002918906000004995
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.8248486628339544,
+          0.8232233923052416,
+          0.822310847160949,
+          0.8241429420083061,
+          0.8247463076390618,
+          0.8101880789599532,
+          0.8220604302893162
+        ],
+        "paired_ratio_median": 0.8232233923052416
+      },
+      {
+        "shape": [
+          1,
+          1,
+          3,
+          2
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 16,
+            "cumulative_positive_self_allocated_bytes": 1704
+          },
+          "candidate": {
+            "bmm_count": 8,
+            "cumulative_positive_self_allocated_bytes": 1031
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.00035028690000018516,
+            0.0003513475000005428,
+            0.00035041010000043117,
+            0.0003523900000004687,
+            0.00035247919999932266,
+            0.0003502186500000448,
+            0.0003517187999996452
+          ],
+          "candidate": [
+            0.00028673949999884484,
+            0.0002882767000002673,
+            0.000287553699999421,
+            0.0002884008999998855,
+            0.00028867939999912553,
+            0.00029464229999973666,
+            0.00028820190000118374
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.8185847087021904,
+          0.820488832280924,
+          0.8206204672726819,
+          0.8184139731533299,
+          0.8189969791116193,
+          0.8413095647524739,
+          0.819409994579404
+        ],
+        "paired_ratio_median": 0.819409994579404
+      },
+      {
+        "shape": [
+          3,
+          2,
+          3,
+          2
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 38,
+            "cumulative_positive_self_allocated_bytes": 6389
+          },
+          "candidate": {
+            "bmm_count": 29,
+            "cumulative_positive_self_allocated_bytes": 5251
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.0007892710000021452,
+            0.0007879435000006652,
+            0.0007979706500002237,
+            0.0007894271000004949,
+            0.0007875735000055784,
+            0.0007909729999937554,
+            0.0007877160500008529
+          ],
+          "candidate": [
+            0.0007214609999977029,
+            0.0007200189999991835,
+            0.0007178998500002365,
+            0.000722522699999928,
+            0.0007242650000023332,
+            0.0007186464500001932,
+            0.0007249215000015852
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9140852761545045,
+          0.9137952150104363,
+          0.8996569610674718,
+          0.9152494258171211,
+          0.9196157564940964,
+          0.908560026708708,
+          0.9202827592516367
+        ],
+        "paired_ratio_median": 0.9140852761545045
+      },
+      {
+        "shape": [
+          3,
+          2,
+          3,
+          2
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 38,
+            "cumulative_positive_self_allocated_bytes": 12498
+          },
+          "candidate": {
+            "bmm_count": 29,
+            "cumulative_positive_self_allocated_bytes": 10458
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.0007821500000062542,
+            0.0007842640000035317,
+            0.0007822209999943652,
+            0.0007778850000050852,
+            0.0007770879999995373,
+            0.000778355000008446,
+            0.0007790660000068783
+          ],
+          "candidate": [
+            0.0007069698000009339,
+            0.0007089446999998472,
+            0.0007111860000037495,
+            0.0007113360000019497,
+            0.0007101850000026388,
+            0.000708622000004766,
+            0.0007067184999982601
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9038800741485403,
+          0.9039618036740877,
+          0.9091880683449723,
+          0.914448793841377,
+          0.9139055036277253,
+          0.9104097744564841,
+          0.9071355956902503
+        ],
+        "paired_ratio_median": 0.9091880683449723
+      },
+      {
+        "shape": [
+          8,
+          32,
+          12,
+          6
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 698,
+            "cumulative_positive_self_allocated_bytes": 2958757
+          },
+          "candidate": {
+            "bmm_count": 659,
+            "cumulative_positive_self_allocated_bytes": 2859002
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.013927754000008008,
+            0.013904560000000288,
+            0.013870300000007774,
+            0.013949495999995065,
+            0.013993970999990779,
+            0.013903838999993923,
+            0.013979138999999918
+          ],
+          "candidate": [
+            0.013605589999997392,
+            0.01356783500000347,
+            0.013634682999992265,
+            0.013786201000002052,
+            0.013655453999987799,
+            0.013583678000003374,
+            0.013590698000001566
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9768689194244505,
+          0.9757831243853231,
+          0.9830128403844635,
+          0.9882938423013224,
+          0.9758097969473281,
+          0.9769731942386064,
+          0.9722128093870192
+        ],
+        "paired_ratio_median": 0.9768689194244505
+      },
+      {
+        "shape": [
+          8,
+          32,
+          12,
+          6
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 698,
+            "cumulative_positive_self_allocated_bytes": 5920181
+          },
+          "candidate": {
+            "bmm_count": 659,
+            "cumulative_positive_self_allocated_bytes": 5701425
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.014001722999992694,
+            0.014008653000004756,
+            0.013992778999991629,
+            0.0140557179999945,
+            0.013968970999997055,
+            0.014090589000005593,
+            0.014195903999990378
+          ],
+          "candidate": [
+            0.01374231100000145,
+            0.013656044000001089,
+            0.013678792999996858,
+            0.013672053999997047,
+            0.01374101599999733,
+            0.013714876999998182,
+            0.0138634000000053
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9814728515918092,
+          0.9748292002090745,
+          0.9775608547812441,
+          0.9727040625034166,
+          0.9836813320036406,
+          0.9733359620376932,
+          0.976577469107617
+        ],
+        "paired_ratio_median": 0.976577469107617
+      },
+      {
+        "shape": [
+          4,
+          24,
+          64,
+          32
+        ],
+        "dtype": "torch.float32",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 522,
+            "cumulative_positive_self_allocated_bytes": 27202367
+          },
+          "candidate": {
+            "bmm_count": 491,
+            "cumulative_positive_self_allocated_bytes": 25931518
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.021438804000005973,
+            0.021474822500003654,
+            0.02147287950000276,
+            0.021458583499999406,
+            0.021362827500006176,
+            0.021451718000001563,
+            0.02134476599999857
+          ],
+          "candidate": [
+            0.020910627500001056,
+            0.020988756999997804,
+            0.02095447699999653,
+            0.0209516574999995,
+            0.020949379500002863,
+            0.02094441199999153,
+            0.021118307999998365
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9753635277413437,
+          0.977365796620402,
+          0.9758578023964525,
+          0.9763765394859394,
+          0.9806463821325527,
+          0.9763512647327363,
+          0.9893904669650526
+        ],
+        "paired_ratio_median": 0.9763765394859394
+      },
+      {
+        "shape": [
+          4,
+          24,
+          64,
+          32
+        ],
+        "dtype": "torch.float64",
+        "outputs_bitwise_equal": true,
+        "raw_Q_p_x_gradients_close": true,
+        "profiles": {
+          "baseline": {
+            "bmm_count": 522,
+            "cumulative_positive_self_allocated_bytes": 54405375
+          },
+          "candidate": {
+            "bmm_count": 491,
+            "cumulative_positive_self_allocated_bytes": 51926257
+          }
+        },
+        "paired_seconds": {
+          "baseline": [
+            0.026959088000005238,
+            0.027040762999995138,
+            0.02688445800000494,
+            0.026973859500003528,
+            0.02707915949999773,
+            0.026867588500003592,
+            0.026713257000004376
+          ],
+          "candidate": [
+            0.026586760999990133,
+            0.025915503500002046,
+            0.026427731500000107,
+            0.02578988400000526,
+            0.025875208999998733,
+            0.026199305999995204,
+            0.025574031499999705
+          ]
+        },
+        "paired_candidate_over_baseline": [
+          0.9861891841439505,
+          0.9583865477467003,
+          0.9830115042674563,
+          0.956106559389541,
+          0.9555395912491635,
+          0.9751268149723114,
+          0.957353552956703
+        ],
+        "paired_ratio_median": 0.9583865477467003
+      }
+    ]
+  },
+  "full_suite_each": {
+    "passed": 427,
+    "skipped": 18
+  },
+  "dense_qp_baseline_each": {
+    "passed": 27
+  },
+  "independent_review_cases": 16,
+  "initial_local_full_collection_failure": "torchvision was absent; installing the matching CPU wheel resolved collection. Original failed log retained.",
+  "scope": "CPU only; no GPU validation. Gradients tolerance-equivalent, not promised bitwise. Local noisy timings retained separately; quoted latency ranges use seven paired rounds on ordinary fork Actions runners."
+}

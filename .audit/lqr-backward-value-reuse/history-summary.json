@@ -1,0 +1,10 @@
+{
+  "upstream_pr_heads": 343,
+  "existing_account_branch_heads": 69,
+  "lqr_commits": 203,
+  "distinct_lqr_sources": 116,
+  "source_path": "pypose/module/lqr.py",
+  "all_source_git_sha1_verified": true,
+  "equivalent_reuse_or_final_skip_found": false,
+  "renamed_implementation_notes": "Earliest DPLQR class uses Vtp1/vtp1 but computes the same repeated projection and final update."
+}

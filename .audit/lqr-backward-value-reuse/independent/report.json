@@ -1,0 +1,168 @@
+{
+  "base": "298e9f0862cb228b0e8851b2616e682ccdca6a32",
+  "source_sha256": "ae3d1274551f2494c69f86542969873b0d33e54b2bdcb2f2a67f4ccbf8cf16e3",
+  "torch": "2.6.0+cpu",
+  "rows": [
+    {
+      "dtype": "torch.float32",
+      "horizon": 1,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 0.0,
+      "max_hvp_abs_difference": 0.0
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 1,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 0.0,
+      "max_hvp_abs_difference": 0.0
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 2,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 5.960464477539063e-08,
+      "max_hvp_abs_difference": 9.5367431640625e-07
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 2,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 1.1920928955078125e-07,
+      "max_hvp_abs_difference": 1.9073486328125e-06
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 5,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 3.814697265625e-06,
+      "max_hvp_abs_difference": 0.00048828125
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 5,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 9.5367431640625e-07,
+      "max_hvp_abs_difference": 1.9073486328125e-06
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 9,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 1.52587890625e-05,
+      "max_hvp_abs_difference": 0.0001220703125
+    },
+    {
+      "dtype": "torch.float32",
+      "horizon": 9,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 3.814697265625e-06,
+      "max_hvp_abs_difference": 1.52587890625e-05
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 1,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 0.0,
+      "max_hvp_abs_difference": 0.0
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 1,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 0.0,
+      "max_hvp_abs_difference": 0.0
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 2,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 5.551115123125783e-17,
+      "max_hvp_abs_difference": 8.881784197001252e-16
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 2,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 1.3877787807814457e-17,
+      "max_hvp_abs_difference": 1.7763568394002505e-15
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 5,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 8.881784197001252e-16,
+      "max_hvp_abs_difference": 7.105427357601002e-15
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 5,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 8.881784197001252e-16,
+      "max_hvp_abs_difference": 7.105427357601002e-15
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 9,
+      "warm_start": false,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 2.842170943040401e-14,
+      "max_hvp_abs_difference": 4.547473508864641e-13
+    },
+    {
+      "dtype": "torch.float64",
+      "horizon": 9,
+      "warm_start": true,
+      "forward_bitwise_equal": true,
+      "raw_Q_p_x_A_B_c_and_warm_start_gradients_match": true,
+      "hessian_vector_products_match": true,
+      "max_gradient_abs_difference": 2.842170943040401e-14,
+      "max_hvp_abs_difference": 1.4210854715202004e-14
+    }
+  ],
+  "scope": "Independent base/candidate compatibility probes; 16 CPU cases cover raw Q, dynamics A/B/c, state, linear cost, warm starts and second-order differentiation. Not GPU validation or a performance benchmark."
+}

@@ -1,0 +1,49 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/function/test_metric.py ________________
+ImportError while importing test module '/workspace/scratch/4bed741d4966/worktrees/pypose-candidate/tests/function/test_metric.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/function/test_metric.py:2: in <module>
+    from torchvision.datasets.utils import download_url
+E   ModuleNotFoundError: No module named 'torchvision'
+__________________ ERROR collecting tests/module/test_icp.py ___________________
+ImportError while importing test module '/workspace/scratch/4bed741d4966/worktrees/pypose-candidate/tests/module/test_icp.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/module/test_icp.py:3: in <module>
+    from torchvision.datasets.utils import download_and_extract_archive
+E   ModuleNotFoundError: No module named 'torchvision'
+__________________ ERROR collecting tests/module/test_pnp.py ___________________
+ImportError while importing test module '/workspace/scratch/4bed741d4966/worktrees/pypose-candidate/tests/module/test_pnp.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/module/test_pnp.py:2: in <module>
+    from torchvision.datasets.utils import download_and_extract_archive
+E   ModuleNotFoundError: No module named 'torchvision'
+________________ ERROR collecting tests/optim/test_jacobian.py _________________
+ImportError while importing test module '/workspace/scratch/4bed741d4966/worktrees/pypose-candidate/tests/optim/test_jacobian.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/optim/test_jacobian.py:13: in <module>
+    from torchvision.transforms import Compose
+E   ModuleNotFoundError: No module named 'torchvision'
+=========================== short test summary info ============================
+ERROR tests/function/test_metric.py
+ERROR tests/module/test_icp.py
+ERROR tests/module/test_pnp.py
+ERROR tests/optim/test_jacobian.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!!
+4 errors in 1.67s
