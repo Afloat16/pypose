@@ -1,0 +1,63 @@
+name: Validate EPnP principal-point reuse
+on:
+  push:
+    branches: [validation/pypose-epnp-offset-reuse-20261117]
+permissions:
+  contents: read
+jobs:
+  native:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - torch: '2.5.1'
+            vision: '0.20.1'
+          - torch: '2.6.0'
+            vision: '0.21.0'
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+      PYTHONPATH: .
+      PYTEST_DISABLE_PLUGIN_AUTOLOAD: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 4
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install CPU dependencies
+        run: |
+          python -m pip install numpy==1.26.4 pytest
+          python -m pip install torch==${{ matrix.torch }} torchvision==${{ matrix.vision }} --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e . --no-deps
+      - name: Check exact production code and tests
+        run: |
+          git diff --exit-code ba24afb6b87c6240b950a3b77a18aa4e7edb4094 HEAD -- pypose tests
+          python -c "import torch,pypose; print(torch.__version__, pypose.__file__)"
+      - name: Validate independent projective and pose oracles on baseline
+        run: |
+          git show 298e9f0862cb228b0e8851b2616e682ccdca6a32:pypose/module/pnp.py > pypose/module/pnp.py
+          python -m pytest -q tests/module/test_epnp_projection.py
+      - name: Restore candidate and run full repository suite
+        run: |
+          git show ba24afb6b87c6240b950a3b77a18aa4e7edb4094:pypose/module/pnp.py > pypose/module/pnp.py
+          git diff --exit-code ba24afb6b87c6240b950a3b77a18aa4e7edb4094 -- pypose tests
+          python - <<'PY'
+          import random,numpy,torch,pytest
+          random.seed(0);numpy.random.seed(0);torch.manual_seed(0)
+          raise SystemExit(pytest.main(['-q']))
+          PY
+      - name: Check public gradients retained storage and projective operations
+        run: |
+          git show 298e9f0862cb228b0e8851b2616e682ccdca6a32:pypose/module/pnp.py > "$RUNNER_TEMP/base_pnp.py"
+          python .validation/compare_epnp_offsets.py "$RUNNER_TEMP/base_pnp.py"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: epnp-offset-${{ matrix.torch }}
+          path: epnp-offset-results.json

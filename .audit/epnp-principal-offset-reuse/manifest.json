@@ -1,0 +1,62 @@
+[
+  {
+    "path": ".audit/epnp-principal-offset-reuse/README.md",
+    "bytes": 2777,
+    "sha256": "c97f5ffd020dc8b3b78d8d03027406d0cedd23c3c371a786b22231133b2b24a7",
+    "git_blob": "5f8c38a02ea5681a6c6dad0930110d2988c2bfee"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/compare_epnp_offsets.py",
+    "bytes": 6348,
+    "sha256": "4654d67dc4a2781d0763342093bbffa7ef766ecec421b320991457c34c37f86e",
+    "git_blob": "6a15dc79f43792c822ba798bbb49f1615b4f3d6e"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/complete-independent-review.json.gz",
+    "bytes": 51502,
+    "sha256": "e75176d30ee5cb20b2ca7cf6c30d67614e1ab6ae81b92aa17f5bcc2bd2a8fd78",
+    "git_blob": "dc5c94853bcfa876dd2fa8c344199578097506c9"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/complete-local-controls.json.gz",
+    "bytes": 32283,
+    "sha256": "6f49df72987490432a18d22c96f6251d4af8871ff4905bb1ad704900e1877617",
+    "git_blob": "4961e8a63721a47701401505bbb2f1d70a2c6d13"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/complete-pnp-source-history.json.gz",
+    "bytes": 216754,
+    "sha256": "55cf2f49765b9699cb318e975d37ff52702d7a2e5ff80f70ff79f49459d8b1d0",
+    "git_blob": "8167d1b65af087a537661da814580eb729d4eaa9"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/official-current-head-statuses-20261117.json",
+    "bytes": 7110,
+    "sha256": "a58702dc912f72e2bb512ff271e6a089593844c1407e310ea133b6e931e6df09",
+    "git_blob": "7eabc2eb45c90c58ee66266e8840cc802d8c3c63"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/submission-and-validation.json",
+    "bytes": 53792,
+    "sha256": "fb9b84a2e456e5dd491c8088141bf3bffb40d71f4ef0f68453472053be6cd81d",
+    "git_blob": "cf6ddb57c07b3adab238a3daafdff72f3fa9f5fa"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/torch-2.5.1-job-133885986354.log",
+    "bytes": 52626,
+    "sha256": "607a3946e7f85bdfaaedc460a2e3ed4ceb05131b1057aad3eb029633810ab7d6",
+    "git_blob": "40feb9de1f1d5a4013dd25e179102deb494947a8"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/torch-2.6.0-job-133885986681.log",
+    "bytes": 50165,
+    "sha256": "1a3ee73fb7a9f2f3cc661265a86c80a33e463872ab8bd2b130c495766d42b99f",
+    "git_blob": "db130737ba374c0989e4e254d0a2a536833ccd20"
+  },
+  {
+    "path": ".audit/epnp-principal-offset-reuse/validate-epnp-offsets.yml",
+    "bytes": 2472,
+    "sha256": "d1e18cc10e8694bbea373f834dc3913b1ea03edc30649d65f83258f6a383157b",
+    "git_blob": "13a3daf39e8395c000ff77e2414ace0db794a88a"
+  }
+]
